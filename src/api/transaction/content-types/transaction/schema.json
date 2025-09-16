@@ -1,0 +1,42 @@
+{
+  "kind": "collectionType",
+  "collectionName": "transactions",
+  "info": {
+    "singularName": "transaction",
+    "pluralName": "transactions",
+    "displayName": "Transaction"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "transactions"
+    },
+    "course": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::course.course",
+      "inversedBy": "transactions"
+    },
+    "purchase_date": {
+      "type": "date",
+      "required": true
+    },
+    "amount": {
+      "type": "decimal"
+    },
+    "payment_method": {
+      "type": "enumeration",
+      "enum": [
+        "Paypal",
+        "Stripe",
+        "Pago movil"
+      ]
+    }
+  }
+}
