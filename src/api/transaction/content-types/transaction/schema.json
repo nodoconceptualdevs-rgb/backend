@@ -4,7 +4,7 @@
   "info": {
     "singularName": "transaction",
     "pluralName": "transactions",
-    "displayName": "Transaction"
+    "displayName": "Transacciones"
   },
   "options": {
     "draftAndPublish": true

@@ -4,7 +4,7 @@
   "info": {
     "singularName": "course",
     "pluralName": "courses",
-    "displayName": "course"
+    "displayName": "Cursos"
   },
   "options": {
     "draftAndPublish": true
@@ -47,6 +47,9 @@
     "isActive": {
       "type": "boolean",
       "default": false
+    },
+    "number_lessons": {
+      "type": "integer"
     }
   }
 }

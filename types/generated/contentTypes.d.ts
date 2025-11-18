@@ -377,7 +377,7 @@ export interface ApiContentCourseContentCourse
   extends Struct.CollectionTypeSchema {
   collectionName: 'content_courses';
   info: {
-    displayName: 'content_course';
+    displayName: 'Contenidos';
     pluralName: 'content-courses';
     singularName: 'content-course';
   };
@@ -408,7 +408,7 @@ export interface ApiContentCourseContentCourse
 export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
   collectionName: 'courses';
   info: {
-    displayName: 'course';
+    displayName: 'Cursos';
     pluralName: 'courses';
     singularName: 'course';
   };
@@ -433,6 +433,7 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
       'api::course.course'
     > &
       Schema.Attribute.Private;
+    number_lessons: Schema.Attribute.Integer;
     price: Schema.Attribute.Decimal & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     title: Schema.Attribute.String & Schema.Attribute.Required;
@@ -446,10 +447,73 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiSliderPrincipal1SliderPrincipal1
+  extends Struct.SingleTypeSchema {
+  collectionName: 'slider_principal_1s';
+  info: {
+    displayName: 'slider_principal_1';
+    pluralName: 'slider-principal-1s';
+    singularName: 'slider-principal-1';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    descripcion: Schema.Attribute.String;
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::slider-principal-1.slider-principal-1'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    titulo: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSliderPrincipalSliderPrincipal
+  extends Struct.SingleTypeSchema {
+  collectionName: 'slider_principals';
+  info: {
+    displayName: 'slider_principal';
+    pluralName: 'slider-principals';
+    singularName: 'slider-principal';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::slider-principal.slider-principal'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    sliders: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiTransactionTransaction extends Struct.CollectionTypeSchema {
   collectionName: 'transactions';
   info: {
-    displayName: 'Transaction';
+    displayName: 'Transacciones';
     pluralName: 'transactions';
     singularName: 'transaction';
   };
@@ -957,6 +1021,7 @@ export interface PluginUsersPermissionsUser
       'plugin::users-permissions.user'
     > &
       Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     password: Schema.Attribute.Password &
       Schema.Attribute.Private &
       Schema.Attribute.SetMinMaxLength<{
@@ -997,6 +1062,8 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::content-course.content-course': ApiContentCourseContentCourse;
       'api::course.course': ApiCourseCourse;
+      'api::slider-principal-1.slider-principal-1': ApiSliderPrincipal1SliderPrincipal1;
+      'api::slider-principal.slider-principal': ApiSliderPrincipalSliderPrincipal;
       'api::transaction.transaction': ApiTransactionTransaction;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

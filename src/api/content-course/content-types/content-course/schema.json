@@ -4,7 +4,7 @@
   "info": {
     "singularName": "content-course",
     "pluralName": "content-courses",
-    "displayName": "content_course"
+    "displayName": "Contenidos"
   },
   "options": {
     "draftAndPublish": true

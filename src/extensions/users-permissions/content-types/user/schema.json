@@ -71,6 +71,10 @@
       "relation": "oneToMany",
       "target": "api::transaction.transaction",
       "mappedBy": "user"
+    },
+    "name": {
+      "type": "string",
+      "required": true
     }
   }
 }
