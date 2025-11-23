@@ -1,0 +1,64 @@
+{
+  "kind": "collectionType",
+  "collectionName": "proyectos",
+  "info": {
+    "singularName": "proyecto",
+    "pluralName": "proyectos",
+    "displayName": "Proyecto",
+    "description": "Proyectos de construcción y remodelación"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nombre_proyecto": {
+      "type": "string",
+      "required": true
+    },
+    "token_nfc": {
+      "type": "uid",
+      "required": true,
+      "unique": true
+    },
+    "estado_general": {
+      "type": "enumeration",
+      "enum": [
+        "En Planificación",
+        "En Ejecución",
+        "Completado"
+      ],
+      "default": "En Planificación"
+    },
+    "fecha_inicio": {
+      "type": "date",
+      "required": true
+    },
+    "ultimo_avance": {
+      "type": "text",
+      "required": false
+    },
+    "cliente": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "gerente_proyecto": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "hitos": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::hito.hito",
+      "mappedBy": "proyecto"
+    },
+    "comentarios": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::comentario-proyecto.comentario-proyecto",
+      "mappedBy": "proyecto"
+    }
+  }
+}

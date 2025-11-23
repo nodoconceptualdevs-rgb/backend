@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "comentarios_proyecto",
+  "info": {
+    "singularName": "comentario-proyecto",
+    "pluralName": "comentarios-proyecto",
+    "displayName": "Comentario Proyecto",
+    "description": "Comentarios y consultas de los clientes en sus proyectos"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "contenido": {
+      "type": "text",
+      "required": true
+    },
+    "autor": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "proyecto": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::proyecto.proyecto",
+      "inversedBy": "comentarios"
+    },
+    "es_privado": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

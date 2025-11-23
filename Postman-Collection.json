@@ -1,0 +1,790 @@
+{
+  "info": {
+    "_postman_id": "nodo-conceptual-backend",
+    "name": "Nodo Conceptual - Backend API",
+    "description": "Colección completa de endpoints para probar el backend de proyectos",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "🔐 Autenticación",
+      "item": [
+        {
+          "name": "Login - Gerente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"gerente1@example.com\",\n  \"password\": \"Gerente123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/local",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "local"]
+            },
+            "description": "Login como Gerente de Proyecto\n\nGuarda el JWT en la variable: gerente_token"
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"cliente1@example.com\",\n  \"password\": \"Cliente123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/local",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "local"]
+            },
+            "description": "Login como Cliente\n\nGuarda el JWT en la variable: cliente_token"
+          },
+          "response": []
+        },
+        {
+          "name": "Auth NFC - Público (Sin Token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{nfc_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/proyectos/auth-nfc",
+              "host": ["{{base_url}}"],
+              "path": ["api", "proyectos", "auth-nfc"]
+            },
+            "description": "Autenticación pública por token NFC\n\nNO requiere JWT\nReemplaza {{nfc_token}} con el token del proyecto"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📦 Proyectos",
+      "item": [
+        {
+          "name": "Listar Proyectos (Gerente)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{gerente_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/proyectos?populate=*",
+              "host": ["{{base_url}}"],
+              "path": ["api", "proyectos"],
+              "query": [
+                {
+                  "key": "populate",
+                  "value": "*"
+                }
+              ]
+            },
+            "description": "Listar todos los proyectos del gerente autenticado\n\nFiltrado automático: solo ve sus proyectos"
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Proyectos (Cliente)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{cliente_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/proyectos?populate=*",
+              "host": ["{{base_url}}"],
+              "path": ["api", "proyectos"],
+              "query": [
+                {
+                  "key": "populate",
+                  "value": "*"
+                }
+              ]
+            },
+            "description": "Listar proyectos del cliente\n\nFiltrado automático: solo ve su proyecto"
+          },
+          "response": []
+        },
+        {
+          "name": "Ver Proyecto Específico",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{gerente_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/proyectos/{{proyecto_id}}?populate=*",
+              "host": ["{{base_url}}"],
+              "path": ["api", "proyectos", "{{proyecto_id}}"],
+              "query": [
+                {
+                  "key": "populate",
+                  "value": "*"
+                }
+              ]
+            },
+            "description": "Ver un proyecto específico\n\nValidación: Solo si eres gerente o cliente del proyecto"
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Proyecto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{gerente_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"nombre_proyecto\": \"Remodelación Casa Nueva\",\n    \"estado_general\": \"En Planificación\",\n    \"fecha_inicio\": \"2025-11-18\",\n    \"cliente\": 2,\n    \"gerente_proyecto\": 3\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/proyectos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "proyectos"]
+            },
+            "description": "Crear nuevo proyecto\n\nAutomáticamente:\n- Genera token NFC único\n- Crea 7 hitos predeterminados\n\nReemplaza cliente y gerente_proyecto con IDs reales"
+          },
+          "response": []
+        },
+        {
+          "name": "Editar Proyecto (Gerente)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{gerente_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"nombre_proyecto\": \"Remodelación Casa Nueva - Actualizado\",\n    \"estado_general\": \"En Ejecución\",\n    \"ultimo_avance\": \"Planos aprobados por el cliente\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/proyectos/{{proyecto_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "proyectos", "{{proyecto_id}}"]
+            },
+            "description": "Editar proyecto\n\nValidación: Solo el gerente asignado puede editar"
+          },
+          "response": []
+        },
+        {
+          "name": "❌ Editar Proyecto (Cliente - Debe Fallar)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{cliente_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"nombre_proyecto\": \"Hacked!\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/proyectos/{{proyecto_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "proyectos", "{{proyecto_id}}"]
+            },
+            "description": "Intento de cliente editando proyecto\n\nResultado esperado: ❌ 403 Forbidden\n\nEsto prueba que la seguridad funciona"
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar Proyecto",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{gerente_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/proyectos/{{proyecto_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "proyectos", "{{proyecto_id}}"]
+            },
+            "description": "Eliminar proyecto\n\nValidación: Solo el gerente asignado puede eliminar"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🎯 Hitos",
+      "item": [
+        {
+          "name": "Listar Hitos de Proyecto",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{gerente_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hitos?filters[proyecto][id]={{proyecto_id}}&populate=*",
+              "host": ["{{base_url}}"],
+              "path": ["api", "hitos"],
+              "query": [
+                {
+                  "key": "filters[proyecto][id]",
+                  "value": "{{proyecto_id}}"
+                },
+                {
+                  "key": "populate",
+                  "value": "*"
+                }
+              ]
+            },
+            "description": "Listar todos los hitos de un proyecto"
+          },
+          "response": []
+        },
+        {
+          "name": "Ver Hito Específico",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{gerente_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hitos/{{hito_id}}?populate=*",
+              "host": ["{{base_url}}"],
+              "path": ["api", "hitos", "{{hito_id}}"],
+              "query": [
+                {
+                  "key": "populate",
+                  "value": "*"
+                }
+              ]
+            },
+            "description": "Ver un hito específico con todos sus datos"
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Hito",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{gerente_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"nombre\": \"Inspección Final\",\n    \"orden\": 8,\n    \"estado_completado\": false,\n    \"proyecto\": {{proyecto_id}}\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/hitos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "hitos"]
+            },
+            "description": "Crear nuevo hito\n\nValidación: Solo gerente del proyecto puede crear"
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Hito - Marcar Completado",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{gerente_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"estado_completado\": true,\n    \"fecha_actualizacion\": \"2025-11-18T20:00:00.000Z\",\n    \"contenido\": {\n      \"descripcion_avance\": \"<p>Etapa completada exitosamente</p>\",\n      \"enlace_tour_360\": null\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/hitos/{{hito_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "hitos", "{{hito_id}}"]
+            },
+            "description": "Actualizar hito - marcar como completado\n\nValidación: Solo gerente del proyecto puede editar"
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Hito - Con Descripción",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{gerente_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"contenido\": {\n      \"descripcion_avance\": \"<p>Se completó la obra gris. Próximo paso: acabados.</p>\",\n      \"enlace_tour_360\": \"https://matterport.com/show/abc123\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/hitos/{{hito_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "hitos", "{{hito_id}}"]
+            },
+            "description": "Actualizar hito con descripción y tour 360"
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar Hito",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{gerente_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/hitos/{{hito_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "hitos", "{{hito_id}}"]
+            },
+            "description": "Eliminar hito\n\nValidación: Solo gerente del proyecto puede eliminar"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "💬 Comentarios",
+      "item": [
+        {
+          "name": "Listar Comentarios del Proyecto",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{gerente_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/comentario-proyectos?filters[proyecto][id]={{proyecto_id}}&populate=*",
+              "host": ["{{base_url}}"],
+              "path": ["api", "comentario-proyectos"],
+              "query": [
+                {
+                  "key": "filters[proyecto][id]",
+                  "value": "{{proyecto_id}}"
+                },
+                {
+                  "key": "populate",
+                  "value": "*"
+                }
+              ]
+            },
+            "description": "Listar todos los comentarios de un proyecto"
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Comentario (Cliente)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{cliente_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"contenido\": \"¿Cuándo comienza la obra? Tengo que coordinar con los vecinos.\",\n    \"proyecto\": {{proyecto_id}},\n    \"es_privado\": false\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/comentario-proyectos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "comentario-proyectos"]
+            },
+            "description": "Crear comentario como cliente"
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Comentario (Gerente - Respuesta)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{gerente_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"contenido\": \"La obra comienza el próximo lunes. Enviaremos notificación a los vecinos.\",\n    \"proyecto\": {{proyecto_id}},\n    \"es_privado\": false\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/comentario-proyectos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "comentario-proyectos"]
+            },
+            "description": "Crear comentario como gerente (respuesta)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📤 Upload de Archivos",
+      "item": [
+        {
+          "name": "Subir Foto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{gerente_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": "/path/to/photo.jpg"
+                },
+                {
+                  "key": "ref",
+                  "value": "hito",
+                  "type": "text"
+                },
+                {
+                  "key": "refId",
+                  "value": "{{hito_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "field",
+                  "value": "contenido.galeria_fotos",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/upload",
+              "host": ["{{base_url}}"],
+              "path": ["api", "upload"]
+            },
+            "description": "Subir foto a galería de hito\n\nReemplaza /path/to/photo.jpg con la ruta real del archivo"
+          },
+          "response": []
+        },
+        {
+          "name": "Subir Video",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{gerente_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": "/path/to/video.mp4"
+                },
+                {
+                  "key": "ref",
+                  "value": "hito",
+                  "type": "text"
+                },
+                {
+                  "key": "refId",
+                  "value": "{{hito_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "field",
+                  "value": "contenido.videos_walkthrough",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/upload",
+              "host": ["{{base_url}}"],
+              "path": ["api", "upload"]
+            },
+            "description": "Subir video walkthrough a hito"
+          },
+          "response": []
+        },
+        {
+          "name": "Subir Documento PDF",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{gerente_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": "/path/to/documento.pdf"
+                },
+                {
+                  "key": "ref",
+                  "value": "hito",
+                  "type": "text"
+                },
+                {
+                  "key": "refId",
+                  "value": "{{hito_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "field",
+                  "value": "contenido.documentacion",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/upload",
+              "host": ["{{base_url}}"],
+              "path": ["api", "upload"]
+            },
+            "description": "Subir documento PDF a hito"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🔒 Pruebas de Seguridad",
+      "item": [
+        {
+          "name": "❌ Acceder sin Token JWT",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/proyectos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "proyectos"]
+            },
+            "description": "Intento de acceder sin autenticación\n\nResultado esperado: ❌ 401 Unauthorized"
+          },
+          "response": []
+        },
+        {
+          "name": "❌ Cliente Intenta Editar Proyecto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{cliente_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"nombre_proyecto\": \"Hacked!\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/proyectos/{{proyecto_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "proyectos", "{{proyecto_id}}"]
+            },
+            "description": "Cliente intenta editar proyecto\n\nResultado esperado: ❌ 403 Forbidden"
+          },
+          "response": []
+        },
+        {
+          "name": "❌ Token NFC Inválido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"invalid!!!!!!!!!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/proyectos/auth-nfc",
+              "host": ["{{base_url}}"],
+              "path": ["api", "proyectos", "auth-nfc"]
+            },
+            "description": "Intento con token NFC inválido\n\nResultado esperado: ❌ 400 Bad Request"
+          },
+          "response": []
+        },
+        {
+          "name": "❌ Token NFC Inexistente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"aaaaaaaaaaaaaaaa\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/proyectos/auth-nfc",
+              "host": ["{{base_url}}"],
+              "path": ["api", "proyectos", "auth-nfc"]
+            },
+            "description": "Intento con token NFC que no existe\n\nResultado esperado: ❌ 404 Not Found"
+          },
+          "response": []
+        },
+        {
+          "name": "❌ Gerente Intenta Ver Proyecto de Otro",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{gerente_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/proyectos/999",
+              "host": ["{{base_url}}"],
+              "path": ["api", "proyectos", "999"]
+            },
+            "description": "Gerente intenta ver proyecto de otro gerente\n\nResultado esperado: ❌ 403 Forbidden"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:1337",
+      "type": "string"
+    },
+    {
+      "key": "gerente_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "cliente_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "nfc_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "proyecto_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "hito_id",
+      "value": "1",
+      "type": "string"
+    }
+  ]
+}

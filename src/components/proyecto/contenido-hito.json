@@ -1,0 +1,42 @@
+{
+  "collectionName": "components_proyecto_contenido_hitos",
+  "info": {
+    "displayName": "Contenido Hito",
+    "description": "Contenido multimedia y documentación de un hito del proyecto"
+  },
+  "options": {},
+  "attributes": {
+    "descripcion_avance": {
+      "type": "richtext",
+      "required": false
+    },
+    "enlace_tour_360": {
+      "type": "string",
+      "required": false
+    },
+    "galeria_fotos": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "videos_walkthrough": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "videos"
+      ]
+    },
+    "documentacion": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "files"
+      ]
+    }
+  }
+}

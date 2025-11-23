@@ -373,6 +373,42 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiComentarioProyectoComentarioProyecto
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'comentarios_proyecto';
+  info: {
+    description: 'Comentarios y consultas de los clientes en sus proyectos';
+    displayName: 'Comentario Proyecto';
+    pluralName: 'comentarios-proyecto';
+    singularName: 'comentario-proyecto';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    autor: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    contenido: Schema.Attribute.Text & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    es_privado: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::comentario-proyecto.comentario-proyecto'
+    > &
+      Schema.Attribute.Private;
+    proyecto: Schema.Attribute.Relation<'manyToOne', 'api::proyecto.proyecto'>;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiContentCourseContentCourse
   extends Struct.CollectionTypeSchema {
   collectionName: 'content_courses';
@@ -441,6 +477,96 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::transaction.transaction'
     >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiHitoHito extends Struct.CollectionTypeSchema {
+  collectionName: 'hitos';
+  info: {
+    description: 'Hitos/Etapas de un proyecto';
+    displayName: 'Hito';
+    pluralName: 'hitos';
+    singularName: 'hito';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    contenido: Schema.Attribute.Component<'proyecto.contenido-hito', false>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    estado_completado: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    fecha_actualizacion: Schema.Attribute.DateTime;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::hito.hito'> &
+      Schema.Attribute.Private;
+    nombre: Schema.Attribute.String & Schema.Attribute.Required;
+    orden: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
+    proyecto: Schema.Attribute.Relation<'manyToOne', 'api::proyecto.proyecto'>;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiProyectoProyecto extends Struct.CollectionTypeSchema {
+  collectionName: 'proyectos';
+  info: {
+    description: 'Proyectos de construcci\u00F3n y remodelaci\u00F3n';
+    displayName: 'Proyecto';
+    pluralName: 'proyectos';
+    singularName: 'proyecto';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    cliente: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    comentarios: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::comentario-proyecto.comentario-proyecto'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    estado_general: Schema.Attribute.Enumeration<
+      ['En Planificaci\u00F3n', 'En Ejecuci\u00F3n', 'Completado']
+    > &
+      Schema.Attribute.DefaultTo<'En Planificaci\u00F3n'>;
+    fecha_inicio: Schema.Attribute.Date & Schema.Attribute.Required;
+    gerente_proyecto: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    hitos: Schema.Attribute.Relation<'oneToMany', 'api::hito.hito'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::proyecto.proyecto'
+    > &
+      Schema.Attribute.Private;
+    nombre_proyecto: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    token_nfc: Schema.Attribute.UID &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    ultimo_avance: Schema.Attribute.Text;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1060,8 +1186,11 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::comentario-proyecto.comentario-proyecto': ApiComentarioProyectoComentarioProyecto;
       'api::content-course.content-course': ApiContentCourseContentCourse;
       'api::course.course': ApiCourseCourse;
+      'api::hito.hito': ApiHitoHito;
+      'api::proyecto.proyecto': ApiProyectoProyecto;
       'api::slider-principal-1.slider-principal-1': ApiSliderPrincipal1SliderPrincipal1;
       'api::slider-principal.slider-principal': ApiSliderPrincipalSliderPrincipal;
       'api::transaction.transaction': ApiTransactionTransaction;
