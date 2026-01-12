@@ -28,7 +28,7 @@ module.exports = async (policyContext, config, { strapi }) => {
       where: { id: hitoId },
       populate: {
         proyecto: {
-          populate: ['gerente_proyecto']
+          populate: ['gerentes']
         }
       }
     });
@@ -37,8 +37,8 @@ module.exports = async (policyContext, config, { strapi }) => {
       return false;
     }
 
-    // Permitir si es el gerente del proyecto
-    return hito.proyecto.gerente_proyecto?.id === user.id;
+    // Permitir si es uno de los gerentes del proyecto
+    return hito.proyecto.gerentes?.some(g => g.id === user.id) || false;
   } catch (error) {
     console.error('Error en policy isHitoManager:', error);
     return false;

@@ -38,15 +38,17 @@
       "type": "text",
       "required": false
     },
-    "cliente": {
+    "clientes": {
       "type": "relation",
-      "relation": "manyToOne",
-      "target": "plugin::users-permissions.user"
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "proyectos_como_cliente"
     },
-    "gerente_proyecto": {
+    "gerentes": {
       "type": "relation",
-      "relation": "manyToOne",
-      "target": "plugin::users-permissions.user"
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "proyectos_como_gerente"
     },
     "hitos": {
       "type": "relation",
@@ -59,6 +61,12 @@
       "relation": "oneToMany",
       "target": "api::comentario-proyecto.comentario-proyecto",
       "mappedBy": "proyecto"
+    },
+    "es_publico": {
+      "type": "boolean",
+      "default": true,
+      "required": false,
+      "description": "Si es false, requiere autenticación para ver el proyecto"
     }
   }
 }

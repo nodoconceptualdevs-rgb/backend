@@ -409,6 +409,50 @@ export interface ApiComentarioProyectoComentarioProyecto
   };
 }
 
+export interface ApiCommentComment extends Struct.CollectionTypeSchema {
+  collectionName: 'comments';
+  info: {
+    description: 'Comentarios en videos de cursos';
+    displayName: 'Comentarios';
+    pluralName: 'comments';
+    singularName: 'comment';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    content: Schema.Attribute.Text & Schema.Attribute.Required;
+    content_course: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::content-course.content-course'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    is_admin_reply: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::comment.comment'
+    > &
+      Schema.Attribute.Private;
+    parent_comment: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::comment.comment'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    replies: Schema.Attribute.Relation<'oneToMany', 'api::comment.comment'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiContentCourseContentCourse
   extends Struct.CollectionTypeSchema {
   collectionName: 'content_courses';
@@ -421,6 +465,7 @@ export interface ApiContentCourseContentCourse
     draftAndPublish: true;
   };
   attributes: {
+    comments: Schema.Attribute.Relation<'oneToMany', 'api::comment.comment'>;
     course: Schema.Attribute.Relation<'manyToOne', 'api::course.course'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -437,7 +482,9 @@ export interface ApiContentCourseContentCourse
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    video_duration: Schema.Attribute.Integer;
     video_lesson_url: Schema.Attribute.Media<'files' | 'videos'>;
+    video_url: Schema.Attribute.String;
   };
 }
 
@@ -534,8 +581,8 @@ export interface ApiProyectoProyecto extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
-    cliente: Schema.Attribute.Relation<
-      'manyToOne',
+    clientes: Schema.Attribute.Relation<
+      'manyToMany',
       'plugin::users-permissions.user'
     >;
     comentarios: Schema.Attribute.Relation<
@@ -545,13 +592,14 @@ export interface ApiProyectoProyecto extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    es_publico: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     estado_general: Schema.Attribute.Enumeration<
       ['En Planificaci\u00F3n', 'En Ejecuci\u00F3n', 'Completado']
     > &
       Schema.Attribute.DefaultTo<'En Planificaci\u00F3n'>;
     fecha_inicio: Schema.Attribute.Date & Schema.Attribute.Required;
-    gerente_proyecto: Schema.Attribute.Relation<
-      'manyToOne',
+    gerentes: Schema.Attribute.Relation<
+      'manyToMany',
       'plugin::users-permissions.user'
     >;
     hitos: Schema.Attribute.Relation<'oneToMany', 'api::hito.hito'>;
@@ -1154,6 +1202,14 @@ export interface PluginUsersPermissionsUser
         minLength: 6;
       }>;
     provider: Schema.Attribute.String;
+    proyectos_como_cliente: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::proyecto.proyecto'
+    >;
+    proyectos_como_gerente: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::proyecto.proyecto'
+    >;
     publishedAt: Schema.Attribute.DateTime;
     resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private;
     role: Schema.Attribute.Relation<
@@ -1187,6 +1243,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::comentario-proyecto.comentario-proyecto': ApiComentarioProyectoComentarioProyecto;
+      'api::comment.comment': ApiCommentComment;
       'api::content-course.content-course': ApiContentCourseContentCourse;
       'api::course.course': ApiCourseCourse;
       'api::hito.hito': ApiHitoHito;

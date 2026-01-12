@@ -30,6 +30,20 @@
     },
     "order": {
       "type": "integer"
+    },
+    "comments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::comment.comment",
+      "mappedBy": "content_course"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "URL del video en Cloudinary"
+    },
+    "video_duration": {
+      "type": "integer",
+      "description": "Duración del video en segundos"
     }
   }
 }

@@ -75,6 +75,18 @@
     "name": {
       "type": "string",
       "required": true
+    },
+    "proyectos_como_cliente": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::proyecto.proyecto",
+      "mappedBy": "clientes"
+    },
+    "proyectos_como_gerente": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::proyecto.proyecto",
+      "mappedBy": "gerentes"
     }
   }
 }

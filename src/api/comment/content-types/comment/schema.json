@@ -1,0 +1,47 @@
+{
+  "kind": "collectionType",
+  "collectionName": "comments",
+  "info": {
+    "singularName": "comment",
+    "pluralName": "comments",
+    "displayName": "Comentarios",
+    "description": "Comentarios en videos de cursos"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "content": {
+      "type": "text",
+      "required": true
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "content_course": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::content-course.content-course",
+      "inversedBy": "comments"
+    },
+    "parent_comment": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::comment.comment",
+      "inversedBy": "replies"
+    },
+    "replies": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::comment.comment",
+      "mappedBy": "parent_comment"
+    },
+    "is_admin_reply": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

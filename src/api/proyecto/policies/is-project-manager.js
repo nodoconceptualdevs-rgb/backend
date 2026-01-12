@@ -26,15 +26,15 @@ module.exports = async (policyContext, config, { strapi }) => {
     // Verificar si es gerente del proyecto
     const proyecto = await strapi.db.query('api::proyecto.proyecto').findOne({
       where: { id: projectId },
-      populate: ['gerente_proyecto']
+      populate: ['gerentes']
     });
 
     if (!proyecto) {
       return false;
     }
 
-    // Permitir si es el gerente asignado
-    return proyecto.gerente_proyecto?.id === user.id;
+    // Permitir si es uno de los gerentes asignados
+    return proyecto.gerentes?.some(g => g.id === user.id) || false;
   } catch (error) {
     console.error('Error en policy isProjectManager:', error);
     return false;
