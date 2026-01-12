@@ -1,4 +1,5 @@
-const { customAlphabet } = require('nanoid');
+// Importar la versión CommonJS compatible
+const { customAlphabet } = require('nanoid/non-secure');
 
 // Genera IDs seguros sin caracteres ambiguos
 const nanoid = customAlphabet('0123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz', 16);
