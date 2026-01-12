@@ -251,9 +251,9 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
     }
 
     try {
-      const { customAlphabet } = await import('nanoid');
-      const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 16);
-      const nuevoToken = nanoid();
+      // Usar crypto nativo en lugar de nanoid
+      const crypto = require('crypto');
+      const nuevoToken = crypto.randomBytes(12).toString('base64').replace(/[+/=]/g, '').slice(0, 16);
 
       const proyecto = await strapi.entityService.update('api::proyecto.proyecto', id, {
         data: {
@@ -291,10 +291,9 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
     const { nombre_proyecto, fecha_inicio, estado_general, clientes, gerentes } = ctx.request.body.data;
 
     try {
-      // Generar token NFC único
-      const { customAlphabet } = await import('nanoid');
-      const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 16);
-      const tokenNFC = nanoid();
+      // Generar token NFC único usando crypto nativo
+      const crypto = require('crypto');
+      const tokenNFC = crypto.randomBytes(12).toString('base64').replace(/[+/=]/g, '').slice(0, 16);
 
       // Crear proyecto sin hitos
       const proyecto = await strapi.entityService.create('api::proyecto.proyecto', {

@@ -1,8 +1,19 @@
-// Importar la versión CommonJS compatible
-const { customAlphabet } = require('nanoid/non-secure');
+// Usar crypto nativo de Node.js (módulo estándar, no requiere instalación)
+const crypto = require('crypto');
 
-// Genera IDs seguros sin caracteres ambiguos
-const nanoid = customAlphabet('0123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz', 16);
+/**
+ * Genera un token único seguro utilizando criptografía
+ * @param {number} length Longitud del token (por defecto 16 caracteres)
+ * @returns {string} Token único seguro
+ */
+function generateSecureToken(length = 16) {
+  // Generar bytes aleatorios
+  const buffer = crypto.randomBytes(Math.ceil(length * 3 / 4));
+  // Convertir a base64 y eliminar caracteres no alfanuméricos
+  return buffer.toString('base64')
+    .replace(/[+/=]/g, '')
+    .slice(0, length);
+}
 
 module.exports = {
   /**
@@ -13,7 +24,7 @@ module.exports = {
     
     // Si no tiene token, generar uno único
     if (!data.token_nfc) {
-      data.token_nfc = nanoid();
+      data.token_nfc = generateSecureToken(16);
       console.log('✅ Token NFC generado:', data.token_nfc);
     }
   },
