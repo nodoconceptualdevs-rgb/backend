@@ -24,10 +24,16 @@ module.exports = [
     name: 'strapi::cors',
     config: {
       enabled: true,
-      origin: ['*'], // Permite todos los orígenes en desarrollo
-      headers: ['*'],
-      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      origin: [
+        'http://localhost:3000',
+        'http://localhost:3001', 
+        'https://frontend-o5rz-bsjlu9raw-nodos-projects-c8b01123.vercel.app',
+        'https://*.vercel.app', // Permitir todos los deploys de Vercel
+      ],
+      headers: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
       keepHeaderOnError: true,
+      credentials: true,
     },
   },
   'strapi::poweredBy',
