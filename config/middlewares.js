@@ -29,6 +29,7 @@ module.exports = [
         'http://localhost:3001', 
         'https://frontend-o5rz-bsjlu9raw-nodos-projects-c8b01123.vercel.app',
         'https://*.vercel.app', // Permitir todos los deploys de Vercel
+        'https://frontend-o5rz.vercel.app/login',
       ],
       headers: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
