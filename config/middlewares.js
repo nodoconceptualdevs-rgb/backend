@@ -13,10 +13,11 @@ module.exports = [
           upgradeInsecureRequests: null,
         },
       },
-      // Desactivar rate limiting durante desarrollo
-      // Para producción, configura valores más altos
+      // Rate limiting configurado para 100 requests por minuto
       rateLimits: {
-        enabled: false, // Desactivado para desarrollo
+        enabled: true,
+        interval: { min: 1 }, // Ventana de 1 minuto
+        max: 100, // Máximo 100 requests por minuto
       },
     },
   },
