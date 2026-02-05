@@ -36,6 +36,9 @@ module.exports = [
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
       keepHeaderOnError: true,
       credentials: true,
+      // Configuración explícita para cookies en producción
+      exposeHeaders: ['WWW-Authenticate', 'Server-Authorization', 'Set-Cookie'],
+      maxAge: 31536000, // 1 año en segundos
     },
   },
   'strapi::poweredBy',
