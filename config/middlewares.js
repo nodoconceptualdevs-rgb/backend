@@ -27,11 +27,19 @@ module.exports = [
       enabled: true,
       // Permitir todos los dominios conocidos + cualquier deploy de Vercel
       origin: [
+        // Entornos de desarrollo
         'http://localhost:3000',
         'http://localhost:3001', 
-        'https://frontend-o5rz-bsjlu9raw-nodos-projects-c8b01123.vercel.app',
-        'https://*.vercel.app',
+        
+        // 'https://frontend-o5rz-bsjlu9raw-nodos-projects-c8b01123.vercel.app',
+        // 'https://*.vercel.app',
+        // Dominios de producción en Vercel
         'https://frontend-o5rz.vercel.app',
+        'https://frontend-o5rz.vercel.app/',
+        'https://www.frontend-o5rz.vercel.app',
+        
+        // Permitir cualquier subdominio de vercel.app para despliegues de preview
+        'https://*.vercel.app',
       ],
       // Permitir todos los headers necesarios, incluyendo Authorization
       headers: [
