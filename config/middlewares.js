@@ -25,22 +25,9 @@ module.exports = [
     name: 'strapi::cors',
     config: {
       enabled: true,
-      // Permitir todos los dominios conocidos + cualquier deploy de Vercel
-      origin: [
-        // Entornos de desarrollo
-        'http://localhost:3000',
-        'http://localhost:3001', 
-        
-        // 'https://frontend-o5rz-bsjlu9raw-nodos-projects-c8b01123.vercel.app',
-        // 'https://*.vercel.app',
-        // Dominios de producción en Vercel
-        'https://frontend-o5rz.vercel.app',
-        'https://frontend-o5rz.vercel.app/',
-        'https://www.frontend-o5rz.vercel.app',
-        
-        // Permitir cualquier subdominio de vercel.app para despliegues de preview
-        'https://*.vercel.app',
-      ],
+      // Usar configuración simple para evitar problemas
+      // Incluir tanto el dominio de producción como localhost para desarrollo
+      origin: ['https://frontend-o5rz.vercel.app', 'http://localhost:3000'],
       // Permitir todos los headers necesarios, incluyendo Authorization
       headers: [
         'Content-Type', 
@@ -54,8 +41,8 @@ module.exports = [
       // Permitir todos los métodos HTTP comunes
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
       keepHeaderOnError: true,
-      // Desactivar credentials ya que usamos Bearer token en lugar de cookies
-      credentials: true,
+      // Configuración para permitir credenciales
+      credentials: false,
       // Exponer estos headers para que el cliente pueda leerlos
       exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
       // Permitir preflight caching por 24 horas
