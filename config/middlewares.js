@@ -25,9 +25,8 @@ module.exports = [
     name: 'strapi::cors',
     config: {
       enabled: true,
-      // Usar configuración simple para evitar problemas
-      // Incluir tanto el dominio de producción como localhost para desarrollo
-      origin: ['https://frontend-o5rz.vercel.app', 'http://localhost:3000'],
+      // Permitir cualquier origen para solucionar problemas de CORS
+      origin: ['*'],
       // Permitir todos los headers necesarios, incluyendo Authorization
       headers: [
         'Content-Type', 
