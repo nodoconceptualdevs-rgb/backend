@@ -34,9 +34,9 @@ module.exports = [
       headers: ['Content-Type', 'Authorization', 'Origin', 'Accept', 'Cache-Control', 'X-Requested-With', 'User-Agent'],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
       keepHeaderOnError: true,
-      credentials: true,
-      // Configuración explícita para cookies en producción
-      exposeHeaders: ['WWW-Authenticate', 'Server-Authorization', 'Set-Cookie'],
+      credentials: false, // Desactivado para usar Authorization header en lugar de cookies
+      // Ya no se necesitan las configuraciones específicas para cookies
+      exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
       maxAge: 31536000, // 1 año en segundos
     },
   },
