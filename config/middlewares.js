@@ -25,21 +25,18 @@ module.exports = [
     name: 'strapi::cors',
     config: {
       enabled: true,
-      // Configuración CORS optimizada para producción y desarrollo
-      origin: [
-        'http://localhost:3000',
-        'http://localhost:3001',
-        'https://frontend-o5rz-bsjlu9raw-nods-projects-c8b01123.vercel.app',
-        'https://frontend-o5rz.vercel.app',
-      ],
-      // Headers permitidos (importantes para la autenticación)
-      headers: ['Content-Type', 'Authorization', 'Origin', 'Accept', 'Cache-Control', 'X-Requested-With', 'User-Agent'],
+      // Configuración CORS más permisiva para solucionar problemas persistentes
+      origin: ['*'],  // Permitir cualquier origen temporalmente para diagnóstico
+      // Headers permitidos (ampliados)
+      headers: ['*'],  // Permitir cualquier header
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
       keepHeaderOnError: true,
       // Importante: false para evitar problemas de cookies entre dominios
       credentials: false,
-      exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
+      exposeHeaders: ['*'],  // Exponer todos los headers
       maxAge: 31536000, // 1 año en segundos
+      // Añadir preflight success siempre
+      preflightContinue: false,
     },
   },
   'strapi::poweredBy',
