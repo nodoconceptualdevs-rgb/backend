@@ -5,11 +5,14 @@ module.exports = [
     name: 'strapi::security',
     config: {
       contentSecurityPolicy: {
-        useDefaults: true,
+        useDefaults: false,  // Desactivar valores predeterminados restrictivos
         directives: {
-          'connect-src': ["'self'", 'https:'],
-          'img-src': ["'self'", 'data:', 'blob:', 'https:'],
-          'media-src': ["'self'", 'data:', 'blob:', 'https:'],
+          'default-src': ["*", "'unsafe-inline'", "'unsafe-eval'"],
+          'connect-src': ["*", "'unsafe-inline'"],
+          'img-src': ["*", 'data:', 'blob:'],
+          'media-src': ["*", 'data:', 'blob:'],
+          'script-src': ["*", "'unsafe-inline'", "'unsafe-eval'"],
+          'style-src': ["*", "'unsafe-inline'"],
           upgradeInsecureRequests: null,
         },
       },
