@@ -27,32 +27,20 @@ module.exports = [
       enabled: true,
       // Configuración específica para el dominio de producción y desarrollo
       origin: [
+        'http://localhost:3000',
+        'http://localhost:3001', 
+        'https://frontend-o5rz-bsjlu9raw-nods-projects-c8b01123.vercel.app',
         'https://frontend-o5rz.vercel.app',
         'http://localhost:3000',
         'https://*.vercel.app'
       ],
-      // Permitir todos los headers necesarios, incluyendo Authorization
-      headers: [
-        '*',
-        'Content-Type', 
-        'Authorization', 
-        'Origin', 
-        'Accept',
-        'User-Agent',
-        'Cache-Control',
-        'X-Requested-With'
-      ],
-      // Permitir todos los métodos HTTP comunes
+      headers: ['Content-Type', 'Authorization', 'Origin', 'Accept', 'Cache-Control', 'X-Requested-With', 'User-Agent'],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
       keepHeaderOnError: true,
-      // Desactivar credenciales para evitar problemas con preflight
-      credentials: false,
-      // Exponer estos headers para que el cliente pueda leerlos
+      credentials: false, // Desactivado para usar Authorization header en lugar de cookies
+      // Ya no se necesitan las configuraciones específicas para cookies
       exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
-      // Permitir preflight caching por 24 horas
-      maxAge: 86400,
-      // Asegurar que los headers CORS se envían en todas las respuestas
-      preflightContinue: false,
+      maxAge: 31536000, // 1 año en segundos
     },
   },
   'strapi::poweredBy',
