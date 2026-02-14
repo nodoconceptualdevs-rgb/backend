@@ -1,0 +1,20 @@
+{
+  "kind": "singleType",
+  "collectionName": "proyectos_infos",
+  "info": {
+    "singularName": "proyectos-info",
+    "pluralName": "proyectos-infos",
+    "displayName": "Proyectos_Info"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Items": {
+      "type": "component",
+      "component": "info-proyectos.item",
+      "repeatable": true
+    }
+  }
+}

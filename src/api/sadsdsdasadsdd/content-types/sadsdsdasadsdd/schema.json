@@ -1,0 +1,20 @@
+{
+  "kind": "singleType",
+  "collectionName": "sadsdsdasadsdds",
+  "info": {
+    "singularName": "sadsdsdasadsdd",
+    "pluralName": "sadsdsdasadsdds",
+    "displayName": "Comentarios_Clientes"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Comentarios": {
+      "type": "component",
+      "component": "info-clientes.cliente",
+      "repeatable": true
+    }
+  }
+}

@@ -569,6 +569,46 @@ export interface ApiHitoHito extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiNuestrosServicioNuestrosServicio
+  extends Struct.SingleTypeSchema {
+  collectionName: 'nuestros_servicios';
+  info: {
+    displayName: 'Nuestros_Servicios';
+    pluralName: 'nuestros-servicios';
+    singularName: 'nuestros-servicio';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Icono_1: Schema.Attribute.Media<'images' | 'files'>;
+    Icono_2: Schema.Attribute.Media<'images' | 'files'>;
+    Icono_3: Schema.Attribute.Media<'images' | 'files'>;
+    Icono_4: Schema.Attribute.Media<'images' | 'files'>;
+    Imagen_1: Schema.Attribute.Media<'files' | 'audios'>;
+    Imagen_2: Schema.Attribute.Media<'files' | 'images'>;
+    Imagen_3: Schema.Attribute.Media<'images' | 'files'>;
+    Imagen_4: Schema.Attribute.Media<'images' | 'files'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::nuestros-servicio.nuestros-servicio'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Titulo_1: Schema.Attribute.String;
+    Titulo_2: Schema.Attribute.String;
+    Titulo_3: Schema.Attribute.String;
+    Titulo_4: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiProyectoProyecto extends Struct.CollectionTypeSchema {
   collectionName: 'proyectos';
   info: {
@@ -621,13 +661,12 @@ export interface ApiProyectoProyecto extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiSliderPrincipal1SliderPrincipal1
-  extends Struct.SingleTypeSchema {
-  collectionName: 'slider_principal_1s';
+export interface ApiProyectosInfoProyectosInfo extends Struct.SingleTypeSchema {
+  collectionName: 'proyectos_infos';
   info: {
-    displayName: 'slider_principal_1';
-    pluralName: 'slider-principal-1s';
-    singularName: 'slider-principal-1';
+    displayName: 'Proyectos_Info';
+    pluralName: 'proyectos-infos';
+    singularName: 'proyectos-info';
   };
   options: {
     draftAndPublish: true;
@@ -636,16 +675,75 @@ export interface ApiSliderPrincipal1SliderPrincipal1
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    descripcion: Schema.Attribute.String;
-    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    Items: Schema.Attribute.Component<'info-proyectos.item', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
-      'api::slider-principal-1.slider-principal-1'
+      'api::proyectos-info.proyectos-info'
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    titulo: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiRestauranteBynodoRestauranteBynodo
+  extends Struct.SingleTypeSchema {
+  collectionName: 'restaurante_bynodos';
+  info: {
+    displayName: 'Restaurante_Bynodo';
+    pluralName: 'restaurante-bynodos';
+    singularName: 'restaurante-bynodo';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::restaurante-bynodo.restaurante-bynodo'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Restaurantes: Schema.Attribute.Component<
+      'by-nodo-restaurantes.restaurante',
+      true
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSadsdsdasadsddSadsdsdasadsdd
+  extends Struct.SingleTypeSchema {
+  collectionName: 'sadsdsdasadsdds';
+  info: {
+    displayName: 'Comentarios_Clientes';
+    pluralName: 'sadsdsdasadsdds';
+    singularName: 'sadsdsdasadsdd';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Comentarios: Schema.Attribute.Component<'info-clientes.cliente', true>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::sadsdsdasadsdd.sadsdsdasadsdd'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -656,7 +754,7 @@ export interface ApiSliderPrincipalSliderPrincipal
   extends Struct.SingleTypeSchema {
   collectionName: 'slider_principals';
   info: {
-    displayName: 'slider_principal';
+    displayName: 'Slider_Principal';
     pluralName: 'slider-principals';
     singularName: 'slider-principal';
   };
@@ -664,9 +762,15 @@ export interface ApiSliderPrincipalSliderPrincipal
     draftAndPublish: true;
   };
   attributes: {
+    Contenido_1: Schema.Attribute.Text;
+    Contenido_2: Schema.Attribute.Text;
+    Contenido_3: Schema.Attribute.Text;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    Imagen_1: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    Imagen_2: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    Imagen_3: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -674,10 +778,9 @@ export interface ApiSliderPrincipalSliderPrincipal
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    sliders: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
-    >;
+    Titulo_1: Schema.Attribute.String;
+    Titulo_2: Schema.Attribute.String;
+    Titulo_3: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1247,8 +1350,11 @@ declare module '@strapi/strapi' {
       'api::content-course.content-course': ApiContentCourseContentCourse;
       'api::course.course': ApiCourseCourse;
       'api::hito.hito': ApiHitoHito;
+      'api::nuestros-servicio.nuestros-servicio': ApiNuestrosServicioNuestrosServicio;
       'api::proyecto.proyecto': ApiProyectoProyecto;
-      'api::slider-principal-1.slider-principal-1': ApiSliderPrincipal1SliderPrincipal1;
+      'api::proyectos-info.proyectos-info': ApiProyectosInfoProyectosInfo;
+      'api::restaurante-bynodo.restaurante-bynodo': ApiRestauranteBynodoRestauranteBynodo;
+      'api::sadsdsdasadsdd.sadsdsdasadsdd': ApiSadsdsdasadsddSadsdsdasadsdd;
       'api::slider-principal.slider-principal': ApiSliderPrincipalSliderPrincipal;
       'api::transaction.transaction': ApiTransactionTransaction;
       'plugin::content-releases.release': PluginContentReleasesRelease;

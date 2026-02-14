@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_info_trabajador_trabajadors",
+  "info": {
+    "displayName": "Trabajador",
+    "icon": "emotionHappy"
+  },
+  "options": {},
+  "attributes": {
+    "Nombre": {
+      "type": "string"
+    },
+    "Puesto": {
+      "type": "string"
+    },
+    "Foto": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  },
+  "config": {}
+}

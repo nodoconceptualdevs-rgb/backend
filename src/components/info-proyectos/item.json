@@ -1,0 +1,30 @@
+{
+  "collectionName": "components_info_proyectos_items",
+  "info": {
+    "displayName": "Proyecto",
+    "icon": "archive"
+  },
+  "options": {},
+  "attributes": {
+    "Titulo": {
+      "type": "string"
+    },
+    "Descripcion": {
+      "type": "text"
+    },
+    "Render": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "subtitulo": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
