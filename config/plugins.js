@@ -31,6 +31,13 @@ module.exports = ({ env }) => ({
           use_filename: true,
           unique_filename: false,
           overwrite: true,
+          // Permitir formatos 3D y CAD específicos
+          allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 
+                           'mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv',
+                           'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
+                           'glb', 'gltf', 'fbx', 'obj', 'dae', '3ds', 'blend',
+                           'dwg', 'dxf', 'skp', 'step', 'stp', 'iges', 'igs',
+                           'zip', 'rar', '7z', 'tar', 'gz'],
         },
         uploadStream: {
           folder: env('CLOUDINARY_FOLDER', 'nodo-conceptual'),
@@ -38,6 +45,13 @@ module.exports = ({ env }) => ({
           use_filename: true,
           unique_filename: false,
           overwrite: true,
+          // Permitir formatos 3D y CAD específicos
+          allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 
+                           'mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv',
+                           'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
+                           'glb', 'gltf', 'fbx', 'obj', 'dae', '3ds', 'blend',
+                           'dwg', 'dxf', 'skp', 'step', 'stp', 'iges', 'igs',
+                           'zip', 'rar', '7z', 'tar', 'gz'],
         },
         delete: {},
       },
@@ -48,6 +62,27 @@ module.exports = ({ env }) => ({
         medium: 1000,
         small: 500,
       },
+      // Agregar formatos 3D y CAD permitidos
+      allowedTypes: [
+        'images',
+        'videos',
+        'files'
+      ],
+      // Extenciones específicas permitidas
+      allowedExtensions: [
+        // Imágenes
+        '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg',
+        // Videos  
+        '.mp4', '.avi', '.mov', '.wmv', '.flv', '.webm', '.mkv',
+        // Documentos
+        '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx',
+        // 3D Models
+        '.glb', '.gltf', '.fbx', '.obj', '.dae', '.3ds', '.blend',
+        // AutoCAD/SketchUp
+        '.dwg', '.dxf', '.skp', '.step', '.stp', '.iges', '.igs',
+        // Archivos comprimidos
+        '.zip', '.rar', '.7z', '.tar', '.gz'
+      ],
       middleware: [handleUploadError], // Agregar el middleware de manejo de errores
     },
   },

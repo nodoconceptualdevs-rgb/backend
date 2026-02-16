@@ -19,24 +19,66 @@
       "multiple": true,
       "required": false,
       "allowedTypes": [
-        "images"
-      ]
+        "images",
+        "files",
+        "videos"
+      ],
+      "pluginOptions": {
+        "upload": {
+          "allowedExtensions": [
+            ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg",
+            ".mp4", ".avi", ".mov", ".wmv", ".flv", ".webm", ".mkv",
+            ".glb", ".gltf", ".fbx", ".obj", ".dae", ".3ds", ".blend",
+            ".dwg", ".dxf", ".skp", ".step", ".stp", ".iges", ".igs",
+            ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+            ".zip", ".rar", ".7z", ".tar", ".gz"
+          ]
+        }
+      }
     },
     "videos_walkthrough": {
       "type": "media",
       "multiple": true,
       "required": false,
       "allowedTypes": [
-        "videos"
-      ]
+        "videos",
+        "files",
+        "images"
+      ],
+      "pluginOptions": {
+        "upload": {
+          "allowedExtensions": [
+            ".mp4", ".avi", ".mov", ".wmv", ".flv", ".webm", ".mkv",
+            ".glb", ".gltf", ".fbx", ".obj", ".dae", ".3ds", ".blend",
+            ".dwg", ".dxf", ".skp", ".step", ".stp", ".iges", ".igs",
+            ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg",
+            ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+            ".zip", ".rar", ".7z", ".tar", ".gz"
+          ]
+        }
+      }
     },
     "documentacion": {
       "type": "media",
       "multiple": true,
       "required": false,
       "allowedTypes": [
-        "files"
-      ]
+        "files",
+        "images",
+        "videos"
+      ],
+      "pluginOptions": {
+        "upload": {
+          "allowedExtensions": [
+            ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+            ".glb", ".gltf", ".fbx", ".obj", ".dae", ".3ds", ".blend",
+            ".dwg", ".dxf", ".skp", ".step", ".stp", ".iges", ".igs",
+            ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg",
+            ".mp4", ".avi", ".mov", ".wmv", ".flv", ".webm", ".mkv",
+            ".zip", ".rar", ".7z", ".tar", ".gz"
+          ]
+        }
+      }
     }
   }
 }

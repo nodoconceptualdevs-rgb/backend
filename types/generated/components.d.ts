@@ -41,7 +41,53 @@ export interface InfoProyectosItem extends Struct.ComponentSchema {
   };
   attributes: {
     Descripcion: Schema.Attribute.Text;
-    Render: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    Render: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'> &
+      Schema.Attribute.SetPluginOptions<{
+        upload: {
+          allowedExtensions: [
+            '.jpg',
+            '.jpeg',
+            '.png',
+            '.gif',
+            '.bmp',
+            '.webp',
+            '.svg',
+            '.mp4',
+            '.avi',
+            '.mov',
+            '.wmv',
+            '.flv',
+            '.webm',
+            '.mkv',
+            '.glb',
+            '.gltf',
+            '.fbx',
+            '.obj',
+            '.dae',
+            '.3ds',
+            '.blend',
+            '.dwg',
+            '.dxf',
+            '.skp',
+            '.step',
+            '.stp',
+            '.iges',
+            '.igs',
+            '.pdf',
+            '.doc',
+            '.docx',
+            '.xls',
+            '.xlsx',
+            '.ppt',
+            '.pptx',
+            '.zip',
+            '.rar',
+            '.7z',
+            '.tar',
+            '.gz',
+          ];
+        };
+      }>;
     subtitulo: Schema.Attribute.String;
     Titulo: Schema.Attribute.String;
   };
@@ -68,10 +114,151 @@ export interface ProyectoContenidoHito extends Struct.ComponentSchema {
   };
   attributes: {
     descripcion_avance: Schema.Attribute.RichText;
-    documentacion: Schema.Attribute.Media<'files', true>;
+    documentacion: Schema.Attribute.Media<'files' | 'images' | 'videos', true> &
+      Schema.Attribute.SetPluginOptions<{
+        upload: {
+          allowedExtensions: [
+            '.pdf',
+            '.doc',
+            '.docx',
+            '.xls',
+            '.xlsx',
+            '.ppt',
+            '.pptx',
+            '.glb',
+            '.gltf',
+            '.fbx',
+            '.obj',
+            '.dae',
+            '.3ds',
+            '.blend',
+            '.dwg',
+            '.dxf',
+            '.skp',
+            '.step',
+            '.stp',
+            '.iges',
+            '.igs',
+            '.jpg',
+            '.jpeg',
+            '.png',
+            '.gif',
+            '.bmp',
+            '.webp',
+            '.svg',
+            '.mp4',
+            '.avi',
+            '.mov',
+            '.wmv',
+            '.flv',
+            '.webm',
+            '.mkv',
+            '.zip',
+            '.rar',
+            '.7z',
+            '.tar',
+            '.gz',
+          ];
+        };
+      }>;
     enlace_tour_360: Schema.Attribute.String;
-    galeria_fotos: Schema.Attribute.Media<'images', true>;
-    videos_walkthrough: Schema.Attribute.Media<'videos', true>;
+    galeria_fotos: Schema.Attribute.Media<'images' | 'files' | 'videos', true> &
+      Schema.Attribute.SetPluginOptions<{
+        upload: {
+          allowedExtensions: [
+            '.jpg',
+            '.jpeg',
+            '.png',
+            '.gif',
+            '.bmp',
+            '.webp',
+            '.svg',
+            '.mp4',
+            '.avi',
+            '.mov',
+            '.wmv',
+            '.flv',
+            '.webm',
+            '.mkv',
+            '.glb',
+            '.gltf',
+            '.fbx',
+            '.obj',
+            '.dae',
+            '.3ds',
+            '.blend',
+            '.dwg',
+            '.dxf',
+            '.skp',
+            '.step',
+            '.stp',
+            '.iges',
+            '.igs',
+            '.pdf',
+            '.doc',
+            '.docx',
+            '.xls',
+            '.xlsx',
+            '.ppt',
+            '.pptx',
+            '.zip',
+            '.rar',
+            '.7z',
+            '.tar',
+            '.gz',
+          ];
+        };
+      }>;
+    videos_walkthrough: Schema.Attribute.Media<
+      'videos' | 'files' | 'images',
+      true
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        upload: {
+          allowedExtensions: [
+            '.mp4',
+            '.avi',
+            '.mov',
+            '.wmv',
+            '.flv',
+            '.webm',
+            '.mkv',
+            '.glb',
+            '.gltf',
+            '.fbx',
+            '.obj',
+            '.dae',
+            '.3ds',
+            '.blend',
+            '.dwg',
+            '.dxf',
+            '.skp',
+            '.step',
+            '.stp',
+            '.iges',
+            '.igs',
+            '.jpg',
+            '.jpeg',
+            '.png',
+            '.gif',
+            '.bmp',
+            '.webp',
+            '.svg',
+            '.pdf',
+            '.doc',
+            '.docx',
+            '.xls',
+            '.xlsx',
+            '.ppt',
+            '.pptx',
+            '.zip',
+            '.rar',
+            '.7z',
+            '.tar',
+            '.gz',
+          ];
+        };
+      }>;
   };
 }
 

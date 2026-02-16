@@ -42,9 +42,19 @@ module.exports = [
       preflightContinue: false,
     },
   },
+  {
+    name: 'strapi::body',
+    config: {
+      // Configurar para archivos grandes y formatos 3D
+      formLimit: '100mb',        // Aumentar límite para formularios
+      jsonLimit: '100mb',        // Aumentar límite para JSON
+      textLimit: '100mb',        // Aumentar límite para texto
+      // No incluir strict mode para permitir tipos de archivo personalizados
+      includeUnparsed: true,
+    },
+  },
   'strapi::poweredBy',
   'strapi::query',
-  'strapi::body',
   'strapi::session',
   'strapi::favicon',
   'strapi::public',

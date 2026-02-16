@@ -17,10 +17,22 @@
       "multiple": false,
       "allowedTypes": [
         "images",
-        "files",
+        "files", 
         "videos",
         "audios"
-      ]
+      ],
+      "pluginOptions": {
+        "upload": {
+          "allowedExtensions": [
+            ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg",
+            ".mp4", ".avi", ".mov", ".wmv", ".flv", ".webm", ".mkv",
+            ".glb", ".gltf", ".fbx", ".obj", ".dae", ".3ds", ".blend",
+            ".dwg", ".dxf", ".skp", ".step", ".stp", ".iges", ".igs",
+            ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+            ".zip", ".rar", ".7z", ".tar", ".gz"
+          ]
+        }
+      }
     },
     "subtitulo": {
       "type": "string"
