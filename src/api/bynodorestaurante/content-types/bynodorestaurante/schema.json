@@ -1,0 +1,20 @@
+{
+  "kind": "singleType",
+  "collectionName": "bynodorestaurantes",
+  "info": {
+    "singularName": "bynodorestaurante",
+    "pluralName": "bynodorestaurantes",
+    "displayName": "by nodo"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Restaurantes": {
+      "type": "component",
+      "component": "by-nodo-restaurantes.restaurante",
+      "repeatable": true
+    }
+  }
+}

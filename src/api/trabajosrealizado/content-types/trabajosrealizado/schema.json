@@ -1,0 +1,20 @@
+{
+  "kind": "singleType",
+  "collectionName": "trabajosrealizados",
+  "info": {
+    "singularName": "trabajosrealizado",
+    "pluralName": "trabajosrealizados",
+    "displayName": "trabajos realizados"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "proyectos": {
+      "type": "component",
+      "component": "info-proyectos.item",
+      "repeatable": true
+    }
+  }
+}
