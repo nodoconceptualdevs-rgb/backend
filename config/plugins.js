@@ -11,6 +11,9 @@ const handleUploadError = (file) => {
 module.exports = ({ env }) => ({
   upload: {
     config: {
+      settings: {
+        autoRotate: true, 
+      },
       provider: 'cloudinary',
       providerOptions: {
         cloud_name: env('CLOUDINARY_NAME'),
