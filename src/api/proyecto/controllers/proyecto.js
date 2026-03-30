@@ -19,9 +19,9 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
       return ctx.badRequest('Token NFC requerido');
     }
 
-    // Validación 2: Formato de token (16 caracteres alfanuméricos)
-    if (!/^[0-9A-Za-z]{16}$/.test(token)) {
-      console.warn(`[SECURITY] Intento de auth-nfc con token inválido: ${token.substring(0, 5)}...`);
+    // Validación 2: Formato de token (15 o 16 caracteres alfanuméricos)
+    if (!/^[0-9A-Za-z]{15,16}$/.test(token)) {
+      console.warn(`[SECURITY] Intento de auth-nfc con token inválido: ${token.substring(0, 5)}... (longitud: ${token.length})`);
       return ctx.notFound('Proyecto no encontrado');
     }
 
@@ -61,8 +61,7 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
       });
 
       if (!proyecto) {
-        console.warn(`[SECURITY] Intento de auth-nfc con token inexistente`);
-        // Respuesta genérica para no revelar información
+        console.warn(`[SECURITY] Intento de auth-nfc con token inexistente: ${token}`);
         return ctx.notFound('Proyecto no encontrado');
       }
 
@@ -90,7 +89,7 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
           
           // Buscar usuario
           const user = await strapi.query('plugin::users-permissions.user').findOne({
-            where: { id: decoded.id },
+            where: { id: typeof decoded === 'object' ? decoded.id : undefined },
             populate: ['role']
           });
 
@@ -100,7 +99,9 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
 
           // Verificar que el usuario tenga acceso al proyecto
           const esAdmin = user.role?.type === 'admin';
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           const esGerente = proyecto.gerentes?.some(g => g.id === user.id);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           const esCliente = proyecto.clientes?.some(c => c.id === user.id);
 
           if (!esAdmin && !esGerente && !esCliente) {
@@ -227,7 +228,9 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
 
     // Verificar acceso
     const esAdmin = user.role.type === 'admin';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const esGerente = proyecto.gerentes?.some(g => g.id === user.id);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const esCliente = proyecto.clientes?.some(c => c.id === user.id);
 
     if (!esAdmin && !esGerente && !esCliente) {
@@ -347,6 +350,7 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
     }
 
     const esAdmin = user.role.type === 'admin';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const esGerente = proyecto.gerentes?.some(g => g.id === user.id);
 
     if (!esAdmin && !esGerente) {

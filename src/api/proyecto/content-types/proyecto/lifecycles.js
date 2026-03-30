@@ -7,12 +7,19 @@ const crypto = require('crypto');
  * @returns {string} Token único seguro
  */
 function generateSecureToken(length = 16) {
-  // Generar bytes aleatorios
-  const buffer = crypto.randomBytes(Math.ceil(length * 3 / 4));
-  // Convertir a base64 y eliminar caracteres no alfanuméricos
-  return buffer.toString('base64')
-    .replace(/[+/=]/g, '')
-    .slice(0, length);
+  // Generar más bytes de los necesarios para asegurar tener suficientes después de limpiar
+  const buffer = crypto.randomBytes(length * 2); // Generar el doble para compensar caracteres eliminados
+  let token = buffer.toString('base64')
+    .replace(/[+/=]/g, ''); // Eliminar caracteres no alfanuméricos
+  
+  // Asegurar longitud exacta
+  while (token.length < length) {
+    // Si aún es muy corto, generar más
+    const extraBuffer = crypto.randomBytes(length);
+    token += extraBuffer.toString('base64').replace(/[+/=]/g, '');
+  }
+  
+  return token.slice(0, length);
 }
 
 module.exports = {

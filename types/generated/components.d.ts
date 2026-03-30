@@ -40,8 +40,14 @@ export interface InfoProyectosItem extends Struct.ComponentSchema {
     icon: 'archive';
   };
   attributes: {
+    Categorias: Schema.Attribute.Enumeration<
+      ['Residencial', 'Comercial', 'Naval', 'Remodelaciones', 'Interiorismo']
+    >;
     Descripcion: Schema.Attribute.Text;
-    Render: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'> &
+    Imagenes: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    > &
       Schema.Attribute.SetPluginOptions<{
         upload: {
           allowedExtensions: [
