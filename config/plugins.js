@@ -9,6 +9,18 @@ const handleUploadError = (file) => {
 };
 
 module.exports = ({ env }) => ({
+  email: {
+    config: {
+      provider: '@strapi/provider-email-sendgrid',
+      providerOptions: {
+        apiKey: env('SENDGRID_API_KEY'),
+      },
+      settings: {
+        defaultFrom: env('SENDGRID_DEFAULT_FROM', 'noreply@conceptualnodo.com'),
+        defaultReplyTo: env('SENDGRID_DEFAULT_REPLY_TO', 'noreply@conceptualnodo.com'),
+      },
+    },
+  },
   upload: {
     config: {
       settings: {

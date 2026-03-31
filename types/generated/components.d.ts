@@ -167,7 +167,6 @@ export interface ProyectoContenidoHito extends Struct.ComponentSchema {
           ];
         };
       }>;
-    enlace_tour_360: Schema.Attribute.String;
     galeria_fotos: Schema.Attribute.Media<'images' | 'files' | 'videos', true> &
       Schema.Attribute.SetPluginOptions<{
         upload: {
