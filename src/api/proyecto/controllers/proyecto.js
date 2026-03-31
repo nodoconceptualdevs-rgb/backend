@@ -248,9 +248,25 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
     const { id } = ctx.params;
     const user = ctx.state.user;
 
-    // Solo admin puede regenerar tokens
-    if (!user || user.role.type !== 'admin') {
-      return ctx.forbidden('Solo administradores pueden regenerar tokens');
+    if (!user) {
+      return ctx.unauthorized('Debes estar autenticado');
+    }
+
+    // Verificar que el usuario tenga acceso al proyecto
+    const proyecto = await strapi.entityService.findOne('api::proyecto.proyecto', id, {
+      populate: { gerentes: true }
+    });
+
+    if (!proyecto) {
+      return ctx.notFound('Proyecto no encontrado');
+    }
+
+    // Admin o gerente asignado puede regenerar tokens
+    const esAdmin = user.role.type === 'admin';
+    const esGerente = proyecto.gerentes?.some(g => g.id === user.id);
+
+    if (!esAdmin && !esGerente) {
+      return ctx.forbidden('No tienes permiso para regenerar tokens de este proyecto');
     }
 
     try {
@@ -258,18 +274,18 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
       const crypto = require('crypto');
       const nuevoToken = crypto.randomBytes(12).toString('base64').replace(/[+/=]/g, '').slice(0, 16);
 
-      const proyecto = await strapi.entityService.update('api::proyecto.proyecto', id, {
+      const proyectoActualizado = await strapi.entityService.update('api::proyecto.proyecto', id, {
         data: {
           token_nfc: nuevoToken
         }
       });
 
-      console.log(`[SECURITY] Token regenerado para proyecto ${id} por usuario ${user.id}`);
+      console.log(`[SECURITY] Token regenerado para proyecto ${id} por usuario ${user.id} (${user.role.type})`);
 
       return ctx.send({
         data: {
-          id: proyecto.id,
-          token_nfc: proyecto.token_nfc
+          id: proyectoActualizado.id,
+          token_nfc: proyectoActualizado.token_nfc
         },
         message: 'Token regenerado exitosamente'
       });
@@ -286,9 +302,9 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
   async create(ctx) {
     const user = ctx.state.user;
 
-    // Solo admin puede crear proyectos
-    if (!user || user.role.type !== 'admin') {
-      return ctx.forbidden('Solo administradores pueden crear proyectos');
+    // Admin y gerentes pueden crear proyectos
+    if (!user || (user.role.type !== 'admin' && user.role.type !== 'gerente_de_proyecto')) {
+      return ctx.forbidden('Solo administradores y gerentes pueden crear proyectos');
     }
 
     const { nombre_proyecto, fecha_inicio, estado_general, clientes, gerentes } = ctx.request.body.data;
@@ -298,6 +314,15 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
       const crypto = require('crypto');
       const tokenNFC = crypto.randomBytes(12).toString('base64').replace(/[+/=]/g, '').slice(0, 16);
 
+      // Si es gerente, asegurarse de que esté asignado
+      let gerentesFinales = gerentes;
+      if (user.role.type === 'gerente_de_proyecto') {
+        // Auto-asignar el gerente si no está en la lista
+        if (!gerentesFinales || !gerentesFinales.includes(user.id)) {
+          gerentesFinales = gerentesFinales ? [...gerentesFinales, user.id] : [user.id];
+        }
+      }
+
       // Crear proyecto sin hitos
       const proyecto = await strapi.entityService.create('api::proyecto.proyecto', {
         data: {
@@ -306,7 +331,7 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
           estado_general: estado_general || 'En Planificación',
           token_nfc: tokenNFC,
           clientes,
-          gerentes
+          gerentes: gerentesFinales
         }
       });
 
@@ -319,7 +344,7 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
         }
       });
 
-      console.log(`[PROYECTO] Proyecto creado: ${proyecto.id} por usuario ${user.id}`);
+      console.log(`[PROYECTO] Proyecto creado: ${proyecto.id} por usuario ${user.id} (${user.role.type})`);
 
       return ctx.send({ data: proyectoCompleto });
     } catch (error) {
