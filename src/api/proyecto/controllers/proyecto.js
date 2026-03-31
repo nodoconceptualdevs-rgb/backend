@@ -403,5 +403,47 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
       console.error('[ERROR] actualizar-proyecto:', error);
       ctx.throw(500, 'Error actualizando proyecto');
     }
+  },
+
+  /**
+   * Eliminar proyecto
+   * DELETE /api/proyectos/:id
+   */
+  async delete(ctx) {
+    const { id } = ctx.params;
+    const user = ctx.state.user;
+
+    if (!user) {
+      return ctx.unauthorized('Debes estar autenticado');
+    }
+
+    // Solo los administradores pueden eliminar proyectos
+    if (user.role.type !== 'admin') {
+      return ctx.forbidden('Solo los administradores pueden eliminar proyectos');
+    }
+
+    try {
+      // Verificar que el proyecto existe
+      const proyecto = await strapi.entityService.findOne('api::proyecto.proyecto', id);
+
+      if (!proyecto) {
+        return ctx.notFound('Proyecto no encontrado');
+      }
+
+      // Eliminar el proyecto (Strapi se encarga de las relaciones en cascada)
+      await strapi.entityService.delete('api::proyecto.proyecto', id);
+
+      console.log(`[PROYECTO] Proyecto eliminado: ${id} por admin ${user.id}`);
+
+      return ctx.send({
+        data: {
+          id: parseInt(id),
+          message: 'Proyecto eliminado exitosamente'
+        }
+      });
+    } catch (error) {
+      console.error('[ERROR] eliminar-proyecto:', error);
+      ctx.throw(500, 'Error eliminando proyecto');
+    }
   }
 }));
