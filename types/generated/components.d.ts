@@ -214,6 +214,7 @@ export interface ProyectoContenidoHito extends Struct.ComponentSchema {
           ];
         };
       }>;
+    rotaciones: Schema.Attribute.JSON;
     videos_walkthrough: Schema.Attribute.Media<
       'videos' | 'files' | 'images',
       true
