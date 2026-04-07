@@ -34,9 +34,9 @@ module.exports = ({ env }) => ({
 
       settings: {
 
-        defaultFrom: env('SENDGRID_DEFAULT_FROM', 'noreply@conceptualnodo.com'),
+        defaultFrom: env('SENDGRID_DEFAULT_FROM', 'nodoconceptualdevs@gmail.com'),
 
-        defaultReplyTo: env('SENDGRID_DEFAULT_REPLY_TO', 'noreply@conceptualnodo.com'),
+        defaultReplyTo: env('SENDGRID_DEFAULT_REPLY_TO', 'nodoconceptualdevs@gmail.com'),
 
       },
 
