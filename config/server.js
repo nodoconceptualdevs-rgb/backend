@@ -16,5 +16,8 @@ module.exports = ({ env }) => ({
 
   },
 
+  // Agregar URL pública para generación de enlaces
+  url: env('FRONTEND_URL', 'https://www.nodoconceptual.com'),
+
 });
 
