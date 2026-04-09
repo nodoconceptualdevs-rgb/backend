@@ -1,0 +1,6 @@
+feat: implementar sistema de carpetas para Cloudinary
+
+- Crear content type Folder con jerarquía
+- Permitir crear carpetas a todos los usuarios autenticados
+- Solo admin puede eliminar carpetas
+- Integrar con upload para organizar archivos en carpetas

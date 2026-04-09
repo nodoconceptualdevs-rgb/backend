@@ -637,6 +637,38 @@ export interface ApiHitoHito extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiMediaTagMediaTag extends Struct.CollectionTypeSchema {
+  collectionName: 'media_tags';
+  info: {
+    description: 'Tags para organizar archivos de la media library';
+    displayName: 'Media Tag';
+    pluralName: 'media-tags';
+    singularName: 'media-tag';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    files: Schema.Attribute.JSON & Schema.Attribute.DefaultTo<[]>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::media-tag.media-tag'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiProyectoProyecto extends Struct.CollectionTypeSchema {
   collectionName: 'proyectos';
   info: {
@@ -1381,6 +1413,7 @@ declare module '@strapi/strapi' {
       'api::content-course.content-course': ApiContentCourseContentCourse;
       'api::course.course': ApiCourseCourse;
       'api::hito.hito': ApiHitoHito;
+      'api::media-tag.media-tag': ApiMediaTagMediaTag;
       'api::proyecto.proyecto': ApiProyectoProyecto;
       'api::resena.resena': ApiResenaResena;
       'api::servicio.servicio': ApiServicioServicio;
