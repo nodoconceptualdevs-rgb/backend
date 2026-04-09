@@ -1,0 +1,63 @@
+{
+  "kind": "singleType",
+  "collectionName": "carrousels",
+  "info": {
+    "singularName": "carrousel",
+    "pluralName": "carrousels",
+    "displayName": "carrousel"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "titulo1": {
+      "type": "string"
+    },
+    "contenido1": {
+      "type": "text"
+    },
+    "foto1": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "titulo2": {
+      "type": "string"
+    },
+    "contenido2": {
+      "type": "text"
+    },
+    "foto2": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "titulo3": {
+      "type": "string"
+    },
+    "contenido3": {
+      "type": "text"
+    },
+    "foto3": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  }
+}

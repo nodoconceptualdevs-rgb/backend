@@ -1,0 +1,20 @@
+{
+  "kind": "singleType",
+  "collectionName": "resenas",
+  "info": {
+    "singularName": "resena",
+    "pluralName": "resenas",
+    "displayName": "reseñas"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "comentarios": {
+      "type": "component",
+      "component": "info-clientes.cliente",
+      "repeatable": true
+    }
+  }
+}

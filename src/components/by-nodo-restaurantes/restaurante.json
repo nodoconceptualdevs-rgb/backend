@@ -1,0 +1,39 @@
+{
+  "collectionName": "components_by_nodo_restaurantes_restaurantes",
+  "info": {
+    "displayName": "Restaurante",
+    "icon": "archive"
+  },
+  "options": {},
+  "attributes": {
+    "Nombre_Restaurante": {
+      "type": "string"
+    },
+    "Descripcion": {
+      "type": "text"
+    },
+    "Fotos_Restaurante": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "Num_Contacto": {
+      "type": "string"
+    },
+    "Direccion": {
+      "type": "string"
+    },
+    "Instagram": {
+      "type": "string"
+    },
+    "Horarios": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "content_courses",
+  "info": {
+    "singularName": "content-course",
+    "pluralName": "content-courses",
+    "displayName": "Contenidos"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "course": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::course.course",
+      "inversedBy": "content_courses"
+    },
+    "lesson_title": {
+      "type": "string"
+    },
+    "video_lesson_url": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "files",
+        "videos"
+      ]
+    },
+    "order": {
+      "type": "integer"
+    },
+    "comments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::comment.comment",
+      "mappedBy": "content_course"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "URL del video en Cloudinary"
+    },
+    "video_duration": {
+      "type": "integer",
+      "description": "Duración del video en segundos"
+    }
+  }
+}

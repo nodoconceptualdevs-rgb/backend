@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "hitos",
+  "info": {
+    "singularName": "hito",
+    "pluralName": "hitos",
+    "displayName": "Hito",
+    "description": "Hitos/Etapas de un proyecto"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nombre": {
+      "type": "string",
+      "required": true
+    },
+    "orden": {
+      "type": "integer",
+      "required": true,
+      "min": 1
+    },
+    "estado_completado": {
+      "type": "boolean",
+      "default": false
+    },
+    "fecha_actualizacion": {
+      "type": "datetime",
+      "required": false
+    },
+    "contenido": {
+      "type": "component",
+      "repeatable": false,
+      "component": "proyecto.contenido-hito"
+    },
+    "proyecto": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::proyecto.proyecto",
+      "inversedBy": "hitos"
+    }
+  }
+}

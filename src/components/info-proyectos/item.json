@@ -1,0 +1,86 @@
+{
+  "collectionName": "components_info_proyectos_items",
+  "info": {
+    "displayName": "Proyecto",
+    "icon": "archive"
+  },
+  "options": {},
+  "attributes": {
+    "Titulo": {
+      "type": "string"
+    },
+    "Descripcion": {
+      "type": "text"
+    },
+    "Imagenes": {
+      "type": "media",
+      "pluginOptions": {
+        "upload": {
+          "allowedExtensions": [
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".gif",
+            ".bmp",
+            ".webp",
+            ".svg",
+            ".mp4",
+            ".avi",
+            ".mov",
+            ".wmv",
+            ".flv",
+            ".webm",
+            ".mkv",
+            ".glb",
+            ".gltf",
+            ".fbx",
+            ".obj",
+            ".dae",
+            ".3ds",
+            ".blend",
+            ".dwg",
+            ".dxf",
+            ".skp",
+            ".step",
+            ".stp",
+            ".iges",
+            ".igs",
+            ".pdf",
+            ".doc",
+            ".docx",
+            ".xls",
+            ".xlsx",
+            ".ppt",
+            ".pptx",
+            ".zip",
+            ".rar",
+            ".7z",
+            ".tar",
+            ".gz"
+          ]
+        }
+      },
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "subtitulo": {
+      "type": "string"
+    },
+    "Categorias": {
+      "type": "enumeration",
+      "enum": [
+        "Residencial",
+        "Comercial",
+        "Naval",
+        "Remodelaciones",
+        "Interiorismo"
+      ]
+    }
+  },
+  "config": {}
+}

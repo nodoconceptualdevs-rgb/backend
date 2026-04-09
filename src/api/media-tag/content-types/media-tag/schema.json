@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "media_tags",
+  "info": {
+    "singularName": "media-tag",
+    "pluralName": "media-tags",
+    "displayName": "Media Tag",
+    "description": "Tags para organizar archivos de la media library"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "files": {
+      "type": "json",
+      "default": []
+    }
+  }
+}

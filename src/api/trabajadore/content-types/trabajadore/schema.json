@@ -1,0 +1,20 @@
+{
+  "kind": "singleType",
+  "collectionName": "trabajadores",
+  "info": {
+    "singularName": "trabajadore",
+    "pluralName": "trabajadores",
+    "displayName": "trabajadores"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "trabajadores": {
+      "type": "component",
+      "component": "info-trabajador.trabajador",
+      "repeatable": true
+    }
+  }
+}
