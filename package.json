@@ -19,7 +19,6 @@
     "@strapi/plugin-documentation": "^5.31.0",
     "@strapi/plugin-users-permissions": "5.23.3",
     "@strapi/provider-email-sendgrid": "^5.40.0",
-    "@strapi/provider-upload-cloudinary": "^5.36.0",
     "@strapi/strapi": "5.23.3",
     "mysql2": "3.9.8",
     "nanoid": "^5.0.0",
