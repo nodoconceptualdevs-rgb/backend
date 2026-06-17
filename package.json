@@ -11,6 +11,8 @@
     "develop": "strapi develop",
     "start": "strapi start",
     "strapi": "strapi",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "upgrade": "npx @strapi/upgrade latest",
     "upgrade:dry": "npx @strapi/upgrade latest --dry"
   },
@@ -27,6 +29,9 @@
     "react-router-dom": "^6.0.0",
     "styled-components": "^6.0.0"
   },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  },
   "engines": {
     "node": ">=18.0.0 <=22.x.x",
     "npm": ">=6.0.0"
@@ -34,5 +39,13 @@
   "strapi": {
     "uuid": "e2c2d553-235e-4f80-84fa-d139998fe8c8",
     "installId": "b782e4c7d62e5a53c092b0413d0a61d9cd6efc4361e613eaddafb241a1b1dfea"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/tests/**/*.test.js"],
+    "collectCoverageFrom": ["src/**/*.js"],
+    "coveragePathIgnorePatterns": ["/node_modules/"],
+    "setupFilesAfterEnv": []
   }
 }
+
