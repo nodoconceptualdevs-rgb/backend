@@ -87,6 +87,18 @@
       "relation": "manyToMany",
       "target": "api::proyecto.proyecto",
       "mappedBy": "gerentes"
+    },
+    "tareas_como_arquitecto": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::tarea-diseno.tarea-diseno",
+      "mappedBy": "arquitectos"
+    },
+    "tareas_como_cliente": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::tarea-diseno.tarea-diseno",
+      "mappedBy": "cliente"
     }
   }
 }

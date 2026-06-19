@@ -1,0 +1,21 @@
+{
+  "kind": "collectionType",
+  "collectionName": "categoria_herramientas",
+  "info": {
+    "singularName": "categoria-herramienta",
+    "pluralName": "categoria-herramientas",
+    "displayName": "Categoría de Herramienta",
+    "description": "Categorías para clasificar herramientas y equipos"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nombre": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    }
+  }
+}

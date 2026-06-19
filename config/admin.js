@@ -17,4 +17,14 @@ module.exports = ({ env }) => ({
     nps: env.bool('FLAG_NPS', true),
     promoteEE: env.bool('FLAG_PROMOTE_EE', true),
   },
+  preview: {
+    enabled: true,
+    config: {
+      allowedOrigins: env('FRONTEND_URL', 'http://localhost:3000'),
+      async handler(uid, { documentId, locale, status }) {
+        const frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
+        return `${frontendUrl}/preview?uid=${uid}&documentId=${documentId}${locale ? `&locale=${locale}` : ''}`;
+      },
+    },
+  },
 });

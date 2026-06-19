@@ -35,10 +35,10 @@ module.exports = createCoreService('api::partida.partida', ({ strapi }) => ({
         }
       });
 
-      // 3. Actualizar precio_actual en partida
+      // 3. Actualizar precioUnitario en partida
       const partidaActualizada = await strapi.entityService.update('api::partida.partida', partidaId, {
         data: {
-          precio_actual: nuevoPrecio
+          precioUnitario: nuevoPrecio
         }
       });
 

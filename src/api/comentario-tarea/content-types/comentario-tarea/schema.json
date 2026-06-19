@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "comentario_tareas",
+  "info": {
+    "singularName": "comentario-tarea",
+    "pluralName": "comentario-tareas",
+    "displayName": "Comentario Tarea",
+    "description": "Comentarios asociados a tareas de diseño"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "contenido": {
+      "type": "text",
+      "required": true
+    },
+    "es_privado": {
+      "type": "boolean",
+      "default": false
+    },
+    "registradoEn": {
+      "type": "datetime",
+      "default": null
+    },
+    "autor": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "tarea": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::tarea-diseno.tarea-diseno",
+      "inversedBy": "comentarios",
+      "required": true
+    }
+  }
+}

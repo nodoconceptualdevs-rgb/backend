@@ -1,0 +1,71 @@
+{
+  "kind": "collectionType",
+  "collectionName": "reportes",
+  "info": {
+    "singularName": "reporte",
+    "pluralName": "reportes",
+    "displayName": "Reporte Diario"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "fecha": {
+      "type": "date",
+      "required": true
+    },
+    "avanceLogrado": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "observaciones": {
+      "type": "text"
+    },
+    "personal": {
+      "type": "json"
+    },
+    "materiales": {
+      "type": "json"
+    },
+    "costoManoObra": {
+      "type": "decimal",
+      "default": 0
+    },
+    "costoMateriales": {
+      "type": "decimal",
+      "default": 0
+    },
+    "costoTotal": {
+      "type": "decimal",
+      "default": 0
+    },
+    "obraNombre": {
+      "type": "string"
+    },
+    "partidaCodigo": {
+      "type": "string"
+    },
+    "partidaDescripcion": {
+      "type": "text"
+    },
+    "valuacionId": {
+      "type": "integer"
+    },
+    "obra": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::obra.obra"
+    },
+    "partida": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::partida.partida"
+    },
+    "imagenes": {
+      "type": "media",
+      "multiple": true
+    }
+  }
+}

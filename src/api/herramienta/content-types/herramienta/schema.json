@@ -1,0 +1,59 @@
+{
+  "kind": "collectionType",
+  "collectionName": "herramientas",
+  "info": {
+    "singularName": "herramienta",
+    "pluralName": "herramientas",
+    "displayName": "Herramienta",
+    "description": "Herramientas y equipos de construcción disponibles para obras"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "codigo": {
+      "type": "string",
+      "required": false
+    },
+    "nombre": {
+      "type": "string",
+      "required": true
+    },
+    "descripcion": {
+      "type": "text",
+      "required": false
+    },
+    "categoria": {
+      "type": "string",
+      "required": true
+    },
+    "fechaAdquisicion": {
+      "type": "date",
+      "required": false
+    },
+    "estado": {
+      "type": "enumeration",
+      "enum": ["DISPONIBLE", "EN_USO", "MANTENIMIENTO", "DESCARTADA"],
+      "default": "DISPONIBLE"
+    },
+    "ultimoUsoFecha": {
+      "type": "datetime",
+      "required": false
+    },
+    "ultimoUsoObraId": {
+      "type": "integer",
+      "required": false
+    },
+    "ultimoUsoObraNombre": {
+      "type": "string",
+      "required": false
+    },
+    "cantidad": {
+      "type": "integer",
+      "required": false,
+      "default": 1,
+      "min": 1
+    }
+  }
+}

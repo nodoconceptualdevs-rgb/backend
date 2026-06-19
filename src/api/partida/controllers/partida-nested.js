@@ -33,9 +33,11 @@ module.exports = {
     }
 
     try {
-      const partida = await strapi.entityService.findOne('api::partida.partida', parseInt(partidaId));
+      const partida = await strapi.entityService.findOne('api::partida.partida', parseInt(partidaId), {
+        populate: ['obra']
+      });
 
-      if (!partida || partida.obra !== parseInt(obraId)) {
+      if (!partida || partida.obra?.id !== parseInt(obraId)) {
         return ctx.notFound('Partida not found or does not belong to this obra');
       }
 
@@ -107,8 +109,10 @@ module.exports = {
 
     try {
       // Verify partida belongs to obra
-      const partida = await strapi.entityService.findOne('api::partida.partida', parseInt(partidaId));
-      if (!partida || partida.obra !== parseInt(obraId)) {
+      const partida = await strapi.entityService.findOne('api::partida.partida', parseInt(partidaId), {
+        populate: ['obra']
+      });
+      if (!partida || partida.obra?.id !== parseInt(obraId)) {
         return ctx.notFound('Partida not found or does not belong to this obra');
       }
 
@@ -118,6 +122,11 @@ module.exports = {
       }
 
       const montoPresupuestado = cantidadPresupuestada * precioUnitario;
+
+      // If price changed, register in history before updating
+      if (precioUnitario !== undefined && precioUnitario !== partida.precioUnitario) {
+        await strapi.service('api::partida.partida').updatePrecioWithHistory(parseInt(partidaId), precioUnitario);
+      }
 
       const updatedPartida = await strapi.entityService.update('api::partida.partida', parseInt(partidaId), {
         data: {
@@ -149,8 +158,10 @@ module.exports = {
 
     try {
       // Verify partida belongs to obra
-      const partida = await strapi.entityService.findOne('api::partida.partida', parseInt(partidaId));
-      if (!partida || partida.obra !== parseInt(obraId)) {
+      const partida = await strapi.entityService.findOne('api::partida.partida', parseInt(partidaId), {
+        populate: ['obra']
+      });
+      if (!partida || partida.obra?.id !== parseInt(obraId)) {
         return ctx.notFound('Partida not found or does not belong to this obra');
       }
 

@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "reprogramacion_tareas",
+  "info": {
+    "singularName": "reprogramacion-tarea",
+    "pluralName": "reprogramacion-tareas",
+    "displayName": "Reprogramacion Tarea",
+    "description": "Registro de cambios en fechas de entrega de tareas"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "fechaAnterior": {
+      "type": "datetime"
+    },
+    "fechaNueva": {
+      "type": "datetime",
+      "required": true
+    },
+    "motivo": {
+      "type": "text",
+      "required": true
+    },
+    "registradoEn": {
+      "type": "datetime",
+      "default": null
+    },
+    "tarea": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::tarea-diseno.tarea-diseno",
+      "inversedBy": "reprogramaciones",
+      "required": true
+    }
+  }
+}

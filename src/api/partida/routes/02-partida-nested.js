@@ -4,41 +4,31 @@ module.exports = {
       method: 'GET',
       path: '/obras/:obraId/partidas',
       handler: 'partida-nested.getPartidas',
-      config: {
-        policies: []
-      }
+      config: { auth: false }
     },
     {
       method: 'POST',
       path: '/obras/:obraId/partidas',
       handler: 'partida-nested.createPartida',
-      config: {
-        policies: []
-      }
+      config: { auth: false }
     },
     {
       method: 'GET',
       path: '/obras/:obraId/partidas/:partidaId',
       handler: 'partida-nested.getPartida',
-      config: {
-        policies: []
-      }
+      config: { auth: false }
     },
     {
       method: 'PUT',
       path: '/obras/:obraId/partidas/:partidaId',
       handler: 'partida-nested.updatePartida',
-      config: {
-        policies: []
-      }
+      config: { auth: false }
     },
     {
       method: 'DELETE',
       path: '/obras/:obraId/partidas/:partidaId',
       handler: 'partida-nested.deletePartida',
-      config: {
-        policies: []
-      }
+      config: { auth: false }
     }
   ]
 };

@@ -5,7 +5,7 @@ module.exports = {
       await strapi.entityService.create('api::partida-precio-historial.partida-precio-historial', {
         data: {
           partida: result.id,
-          precio: result.precio_actual,
+          precio: result.precioUnitario,
           fecha_inicio: new Date().toISOString(),
           fecha_fin: null
         }

@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_inventario_historial_precios",
+  "info": {
+    "displayName": "Historial Precio",
+    "description": "Registro histórico de precios de un material"
+  },
+  "options": {},
+  "attributes": {
+    "fecha": {
+      "type": "datetime",
+      "required": true
+    },
+    "precio": {
+      "type": "decimal",
+      "required": true
+    },
+    "cantidad": {
+      "type": "decimal",
+      "required": false
+    }
+  }
+}

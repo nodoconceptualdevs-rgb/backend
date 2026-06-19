@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "valuaciones",
+  "info": {
+    "singularName": "valuacion",
+    "pluralName": "valuaciones",
+    "displayName": "Valuacion"
+  },
+  "options": { "draftAndPublish": false },
+  "attributes": {
+    "numero":               { "type": "integer", "required": true },
+    "fecha":                { "type": "date",    "required": true },
+    "notas":                { "type": "text" },
+    "lineas":               { "type": "json" },
+    "totalPresupuesto":     { "type": "decimal", "default": 0 },
+    "totalEjecutado":       { "type": "decimal", "default": 0 },
+    "totalAumentos":        { "type": "decimal", "default": 0 },
+    "totalDisminuciones":   { "type": "decimal", "default": 0 },
+    "totalExtras":          { "type": "decimal", "default": 0 },
+    "presupuestoModificado":{ "type": "decimal", "default": 0 },
+    "costoManoObra":        { "type": "decimal", "default": 0 },
+    "costoMateriales":      { "type": "decimal", "default": 0 },
+    "costoTotal":           { "type": "decimal", "default": 0 },
+    "obra": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::obra.obra"
+    }
+  }
+}

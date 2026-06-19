@@ -1,0 +1,73 @@
+{
+  "kind": "collectionType",
+  "collectionName": "partidas",
+  "info": {
+    "singularName": "partida",
+    "pluralName": "partidas",
+    "displayName": "Partida",
+    "description": "Budget line items for construction works"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "codigo": {
+      "type": "string",
+      "required": true
+    },
+    "descripcion": {
+      "type": "text",
+      "required": true
+    },
+    "unidad": {
+      "type": "string",
+      "required": true
+    },
+    "cantidadPresupuestada": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "precioUnitario": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "montoPresupuestado": {
+      "type": "decimal",
+      "min": 0,
+      "default": 0
+    },
+    "cantidadEjecutada": {
+      "type": "decimal",
+      "min": 0,
+      "default": 0
+    },
+    "montoEjecutado": {
+      "type": "decimal",
+      "min": 0,
+      "default": 0
+    },
+    "avancePorcentaje": {
+      "type": "decimal",
+      "min": 0,
+      "default": 0
+    },
+    "esExtra": {
+      "type": "boolean",
+      "default": false
+    },
+    "obra": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::obra.obra"
+    },
+    "historial_precios": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::partida-precio-historial.partida-precio-historial",
+      "mappedBy": "partida"
+    }
+  }
+}
