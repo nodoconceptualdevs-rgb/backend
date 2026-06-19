@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "partida_precio_historialsv",
+  "info": {
+    "singularName": "partida-precio-historial",
+    "pluralName": "partida-precio-historialsv",
+    "displayName": "Partida Precio Historial",
+    "description": "Immutable price history for partidas"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "precio": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "fecha_inicio": {
+      "type": "datetime",
+      "required": true
+    },
+    "fecha_fin": {
+      "type": "datetime",
+      "required": false,
+      "description": "NULL = vigente. Populated when price changes."
+    },
+    "partida": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::partida.partida"
+    }
+  }
+}

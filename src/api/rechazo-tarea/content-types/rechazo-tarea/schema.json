@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "rechazo_tareas",
+  "info": {
+    "singularName": "rechazo-tarea",
+    "pluralName": "rechazo-tareas",
+    "displayName": "Rechazo Tarea",
+    "description": "Registro de rechazos y retrabajos en tareas"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "motivo": {
+      "type": "text",
+      "required": true
+    },
+    "categoria": {
+      "type": "enumeration",
+      "enum": ["BRIEF_POCO_CLARO", "NO_CUMPLE_EXPECTATIVAS", "OTRO"],
+      "required": true
+    },
+    "registradoEn": {
+      "type": "datetime",
+      "default": null
+    },
+    "tarea": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::tarea-diseno.tarea-diseno",
+      "inversedBy": "rechazos",
+      "required": true
+    }
+  }
+}

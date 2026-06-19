@@ -1,0 +1,34 @@
+{
+  "collectionName": "components_inventario_linea_facturas",
+  "info": {
+    "displayName": "Linea Factura",
+    "description": "Ítem de una factura de compra de materiales"
+  },
+  "options": {},
+  "attributes": {
+    "materialId": {
+      "type": "integer",
+      "required": true
+    },
+    "materialNombre": {
+      "type": "string",
+      "required": true
+    },
+    "unidad": {
+      "type": "string",
+      "required": true
+    },
+    "cantidad": {
+      "type": "decimal",
+      "required": true
+    },
+    "precioUnitario": {
+      "type": "decimal",
+      "required": true
+    },
+    "subtotal": {
+      "type": "decimal",
+      "required": true
+    }
+  }
+}

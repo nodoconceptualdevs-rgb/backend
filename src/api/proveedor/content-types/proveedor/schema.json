@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "proveedores",
+  "info": {
+    "singularName": "proveedor",
+    "pluralName": "proveedores",
+    "displayName": "Proveedor",
+    "description": "Proveedores de materiales y servicios para obras"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nombre": {
+      "type": "string",
+      "required": true
+    },
+    "rut": {
+      "type": "string",
+      "required": false
+    },
+    "email": {
+      "type": "email",
+      "required": false
+    },
+    "telefono": {
+      "type": "string",
+      "required": false
+    },
+    "contacto": {
+      "type": "string",
+      "required": false
+    },
+    "notas": {
+      "type": "text",
+      "required": false
+    },
+    "activo": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

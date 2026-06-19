@@ -112,6 +112,49 @@ export interface InfoTrabajadorTrabajador extends Struct.ComponentSchema {
   };
 }
 
+export interface InventarioHistorialPrecio extends Struct.ComponentSchema {
+  collectionName: 'components_inventario_historial_precios';
+  info: {
+    description: 'Registro hist\u00F3rico de precios de un material';
+    displayName: 'Historial Precio';
+  };
+  attributes: {
+    cantidad: Schema.Attribute.Decimal;
+    fecha: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    precio: Schema.Attribute.Decimal & Schema.Attribute.Required;
+  };
+}
+
+export interface InventarioLineaFactura extends Struct.ComponentSchema {
+  collectionName: 'components_inventario_linea_facturas';
+  info: {
+    description: '\u00CDtem de una factura de compra de materiales';
+    displayName: 'Linea Factura';
+  };
+  attributes: {
+    cantidad: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    materialId: Schema.Attribute.Integer & Schema.Attribute.Required;
+    materialNombre: Schema.Attribute.String & Schema.Attribute.Required;
+    precioUnitario: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    subtotal: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    unidad: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface KpiPublicacionHito extends Struct.ComponentSchema {
+  collectionName: 'components_kpi_publicacion_hitos';
+  info: {
+    description: 'Registro de publicaci\u00F3n de una tarea en un hito visible al cliente';
+    displayName: 'Publicacion Hito';
+  };
+  attributes: {
+    archivoIds: Schema.Attribute.JSON;
+    fecha: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    hitoId: Schema.Attribute.Integer & Schema.Attribute.Required;
+    hitoNombre: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface ProyectoContenidoHito extends Struct.ComponentSchema {
   collectionName: 'components_proyecto_contenido_hitos';
   info: {
@@ -275,6 +318,9 @@ declare module '@strapi/strapi' {
       'info-clientes.cliente': InfoClientesCliente;
       'info-proyectos.item': InfoProyectosItem;
       'info-trabajador.trabajador': InfoTrabajadorTrabajador;
+      'inventario.historial-precio': InventarioHistorialPrecio;
+      'inventario.linea-factura': InventarioLineaFactura;
+      'kpi.publicacion-hito': KpiPublicacionHito;
       'proyecto.contenido-hito': ProyectoContenidoHito;
     }
   }

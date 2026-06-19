@@ -1,0 +1,15 @@
+{
+  "kind": "collectionType",
+  "collectionName": "personals",
+  "info": {
+    "singularName": "personal",
+    "pluralName": "personals",
+    "displayName": "Personal"
+  },
+  "options": { "draftAndPublish": false },
+  "attributes": {
+    "nombre":       { "type": "string",  "required": true },
+    "cargo":        { "type": "string",  "required": true },
+    "costoPorHora": { "type": "decimal", "required": true }
+  }
+}

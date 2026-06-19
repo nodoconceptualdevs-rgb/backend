@@ -1,0 +1,108 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tareas_diseno",
+  "info": {
+    "singularName": "tarea-diseno",
+    "pluralName": "tareas-diseno",
+    "displayName": "Tarea Diseño",
+    "description": "Tareas de diseño para KPI y productividad"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "titulo": {
+      "type": "string",
+      "required": true
+    },
+    "descripcion": {
+      "type": "text"
+    },
+    "estado": {
+      "type": "enumeration",
+      "enum": ["PENDIENTE", "EN_PROCESO", "COMPLETADA"],
+      "default": "PENDIENTE",
+      "required": true
+    },
+    "tipo": {
+      "type": "enumeration",
+      "enum": ["CLIENTE", "INDEPENDIENTE"],
+      "required": true
+    },
+    "orden": {
+      "type": "integer",
+      "default": 0
+    },
+    "notasInternas": {
+      "type": "text"
+    },
+    "fechaRequerimiento": {
+      "type": "datetime"
+    },
+    "fechaInicio": {
+      "type": "datetime"
+    },
+    "fechaEntregaOriginal": {
+      "type": "datetime"
+    },
+    "fechaEntregaEstimada": {
+      "type": "datetime"
+    },
+    "fechaCompletacion": {
+      "type": "datetime"
+    },
+    "contadorRechazos": {
+      "type": "integer",
+      "default": 0
+    },
+    "arquitectos": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "tareas_como_arquitecto"
+    },
+    "cliente": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "proyecto": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::proyecto.proyecto"
+    },
+    "hito": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::hito.hito"
+    },
+    "reprogramaciones": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::reprogramacion-tarea.reprogramacion-tarea",
+      "mappedBy": "tarea"
+    },
+    "rechazos": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::rechazo-tarea.rechazo-tarea",
+      "mappedBy": "tarea"
+    },
+    "comentarios": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::comentario-tarea.comentario-tarea",
+      "mappedBy": "tarea"
+    },
+    "archivos": {
+      "type": "media",
+      "multiple": true
+    },
+    "publicacion": {
+      "type": "component",
+      "repeatable": false,
+      "component": "kpi.publicacion-hito"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_kpi_publicacion_hitos",
+  "info": {
+    "displayName": "Publicacion Hito",
+    "description": "Registro de publicación de una tarea en un hito visible al cliente"
+  },
+  "options": {},
+  "attributes": {
+    "hitoId": {
+      "type": "integer",
+      "required": true
+    },
+    "hitoNombre": {
+      "type": "string",
+      "required": true
+    },
+    "fecha": {
+      "type": "datetime",
+      "required": true
+    },
+    "archivoIds": {
+      "type": "json"
+    }
+  }
+}

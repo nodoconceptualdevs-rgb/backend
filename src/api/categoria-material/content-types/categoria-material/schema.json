@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "categoria_materiales",
+  "info": {
+    "singularName": "categoria-material",
+    "pluralName": "categoria-materiales",
+    "displayName": "Categoría de Material",
+    "description": "Categorías para clasificar materiales de construcción"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nombre": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "etiqueta": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

@@ -441,6 +441,71 @@ export interface ApiCarrouselCarrousel extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiCategoriaHerramientaCategoriaHerramienta
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'categoria_herramientas';
+  info: {
+    description: 'Categor\u00EDas para clasificar herramientas y equipos';
+    displayName: 'Categor\u00EDa de Herramienta';
+    pluralName: 'categoria-herramientas';
+    singularName: 'categoria-herramienta';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::categoria-herramienta.categoria-herramienta'
+    > &
+      Schema.Attribute.Private;
+    nombre: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiCategoriaMaterialCategoriaMaterial
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'categoria_materiales';
+  info: {
+    description: 'Categor\u00EDas para clasificar materiales de construcci\u00F3n';
+    displayName: 'Categor\u00EDa de Material';
+    pluralName: 'categoria-materiales';
+    singularName: 'categoria-material';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    etiqueta: Schema.Attribute.String & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::categoria-material.categoria-material'
+    > &
+      Schema.Attribute.Private;
+    nombre: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiComentarioProyectoComentarioProyecto
   extends Struct.CollectionTypeSchema {
   collectionName: 'comentarios_proyecto';
@@ -471,6 +536,47 @@ export interface ApiComentarioProyectoComentarioProyecto
       Schema.Attribute.Private;
     proyecto: Schema.Attribute.Relation<'manyToOne', 'api::proyecto.proyecto'>;
     publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiComentarioTareaComentarioTarea
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'comentario_tareas';
+  info: {
+    description: 'Comentarios asociados a tareas de dise\u00F1o';
+    displayName: 'Comentario Tarea';
+    pluralName: 'comentario-tareas';
+    singularName: 'comentario-tarea';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    autor: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    contenido: Schema.Attribute.Text & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    es_privado: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::comentario-tarea.comentario-tarea'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    registradoEn: Schema.Attribute.DateTime;
+    tarea: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::tarea-diseno.tarea-diseno'
+    > &
+      Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -598,6 +704,105 @@ export interface ApiCourseCourse extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiFacturaCompraFacturaCompra
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'factura_compras';
+  info: {
+    description: 'Facturas de compra de materiales para obras';
+    displayName: 'Factura de Compra';
+    pluralName: 'factura-compras';
+    singularName: 'factura-compra';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    archivoPdf: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    estado: Schema.Attribute.Enumeration<['APROBADA', 'PAGADA', 'ANULADA']> &
+      Schema.Attribute.DefaultTo<'APROBADA'>;
+    fecha: Schema.Attribute.Date & Schema.Attribute.Required;
+    fechaRecepcion: Schema.Attribute.Date;
+    impuesto: Schema.Attribute.Decimal;
+    inhabilitada: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    items: Schema.Attribute.Component<'inventario.linea-factura', true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::factura-compra.factura-compra'
+    > &
+      Schema.Attribute.Private;
+    notas: Schema.Attribute.Text;
+    numero: Schema.Attribute.String & Schema.Attribute.Required;
+    obraId: Schema.Attribute.Integer;
+    obraNombre: Schema.Attribute.String;
+    proveedor: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::proveedor.proveedor'
+    >;
+    proveedorNombre: Schema.Attribute.String;
+    proveedorRut: Schema.Attribute.String;
+    proyectoId: Schema.Attribute.Integer;
+    proyectoNombre: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    subtotal: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    total: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiHerramientaHerramienta extends Struct.CollectionTypeSchema {
+  collectionName: 'herramientas';
+  info: {
+    description: 'Herramientas y equipos de construcci\u00F3n disponibles para obras';
+    displayName: 'Herramienta';
+    pluralName: 'herramientas';
+    singularName: 'herramienta';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    cantidad: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
+    categoria: Schema.Attribute.String & Schema.Attribute.Required;
+    codigo: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    descripcion: Schema.Attribute.Text;
+    estado: Schema.Attribute.Enumeration<
+      ['DISPONIBLE', 'EN_USO', 'MANTENIMIENTO', 'DESCARTADA']
+    > &
+      Schema.Attribute.DefaultTo<'DISPONIBLE'>;
+    fechaAdquisicion: Schema.Attribute.Date;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::herramienta.herramienta'
+    > &
+      Schema.Attribute.Private;
+    nombre: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    ultimoUsoFecha: Schema.Attribute.DateTime;
+    ultimoUsoObraId: Schema.Attribute.Integer;
+    ultimoUsoObraNombre: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiHitoHito extends Struct.CollectionTypeSchema {
   collectionName: 'hitos';
   info: {
@@ -637,6 +842,51 @@ export interface ApiHitoHito extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiMaterialCatalogoMaterialCatalogo
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'material_catalogos';
+  info: {
+    description: 'Cat\u00E1logo de materiales de construcci\u00F3n con control de stock';
+    displayName: 'Material Cat\u00E1logo';
+    pluralName: 'material-catalogos';
+    singularName: 'material-catalogo';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    categoria: Schema.Attribute.String & Schema.Attribute.Required;
+    codigo: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    historialPrecios: Schema.Attribute.Component<
+      'inventario.historial-precio',
+      true
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::material-catalogo.material-catalogo'
+    > &
+      Schema.Attribute.Private;
+    nombre: Schema.Attribute.String & Schema.Attribute.Required;
+    obraId: Schema.Attribute.Integer;
+    obraNombre: Schema.Attribute.String;
+    precioPromedio: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    proyectoId: Schema.Attribute.Integer;
+    proyectoNombre: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    stockActual: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    stockMinimo: Schema.Attribute.Decimal;
+    ultimaCompra: Schema.Attribute.DateTime;
+    unidad: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiMediaTagMediaTag extends Struct.CollectionTypeSchema {
   collectionName: 'media_tags';
   info: {
@@ -669,6 +919,234 @@ export interface ApiMediaTagMediaTag extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiObraObra extends Struct.CollectionTypeSchema {
+  collectionName: 'obras';
+  info: {
+    displayName: 'Obra';
+    pluralName: 'obras';
+    singularName: 'obra';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    estado: Schema.Attribute.Enumeration<
+      ['PREPARACION', 'EN_CURSO', 'PAUSADA', 'COMPLETADA']
+    > &
+      Schema.Attribute.DefaultTo<'PREPARACION'>;
+    fecha_fin_planificada: Schema.Attribute.DateTime &
+      Schema.Attribute.Required;
+    fecha_fin_real: Schema.Attribute.DateTime;
+    fecha_inicio: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::obra.obra'> &
+      Schema.Attribute.Private;
+    nombre: Schema.Attribute.String & Schema.Attribute.Required;
+    notas: Schema.Attribute.Text;
+    presupuesto_consumido: Schema.Attribute.Decimal &
+      Schema.Attribute.DefaultTo<0>;
+    presupuesto_total: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    proyecto: Schema.Attribute.Relation<'manyToOne', 'api::proyecto.proyecto'>;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPartidaPrecioHistorialPartidaPrecioHistorial
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'partida_precio_historialsv';
+  info: {
+    description: 'Immutable price history for partidas';
+    displayName: 'Partida Precio Historial';
+    pluralName: 'partida-precio-historialsv';
+    singularName: 'partida-precio-historial';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    fecha_fin: Schema.Attribute.DateTime;
+    fecha_inicio: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::partida-precio-historial.partida-precio-historial'
+    > &
+      Schema.Attribute.Private;
+    partida: Schema.Attribute.Relation<'manyToOne', 'api::partida.partida'>;
+    precio: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPartidaPartida extends Struct.CollectionTypeSchema {
+  collectionName: 'partidas';
+  info: {
+    description: 'Budget line items for construction works';
+    displayName: 'Partida';
+    pluralName: 'partidas';
+    singularName: 'partida';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    avancePorcentaje: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    cantidadEjecutada: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    cantidadPresupuestada: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    codigo: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    descripcion: Schema.Attribute.Text & Schema.Attribute.Required;
+    esExtra: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    historial_precios: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::partida-precio-historial.partida-precio-historial'
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::partida.partida'
+    > &
+      Schema.Attribute.Private;
+    montoEjecutado: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    montoPresupuestado: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    obra: Schema.Attribute.Relation<'manyToOne', 'api::obra.obra'>;
+    precioUnitario: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    publishedAt: Schema.Attribute.DateTime;
+    unidad: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPersonalPersonal extends Struct.CollectionTypeSchema {
+  collectionName: 'personals';
+  info: {
+    displayName: 'Personal';
+    pluralName: 'personals';
+    singularName: 'personal';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    cargo: Schema.Attribute.String & Schema.Attribute.Required;
+    costoPorHora: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::personal.personal'
+    > &
+      Schema.Attribute.Private;
+    nombre: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiProveedorProveedor extends Struct.CollectionTypeSchema {
+  collectionName: 'proveedores';
+  info: {
+    description: 'Proveedores de materiales y servicios para obras';
+    displayName: 'Proveedor';
+    pluralName: 'proveedores';
+    singularName: 'proveedor';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    activo: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    contacto: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::proveedor.proveedor'
+    > &
+      Schema.Attribute.Private;
+    nombre: Schema.Attribute.String & Schema.Attribute.Required;
+    notas: Schema.Attribute.Text;
+    publishedAt: Schema.Attribute.DateTime;
+    rut: Schema.Attribute.String;
+    telefono: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiProyectoProyecto extends Struct.CollectionTypeSchema {
   collectionName: 'proyectos';
   info: {
@@ -681,6 +1159,7 @@ export interface ApiProyectoProyecto extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    biblioteca: Schema.Attribute.Media<'images' | 'files' | 'videos', true>;
     clientes: Schema.Attribute.Relation<
       'manyToMany',
       'plugin::users-permissions.user'
@@ -710,11 +1189,139 @@ export interface ApiProyectoProyecto extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     nombre_proyecto: Schema.Attribute.String & Schema.Attribute.Required;
+    obras: Schema.Attribute.Relation<'oneToMany', 'api::obra.obra'>;
     publishedAt: Schema.Attribute.DateTime;
     token_nfc: Schema.Attribute.UID &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
     ultimo_avance: Schema.Attribute.Text;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiRechazoTareaRechazoTarea
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'rechazo_tareas';
+  info: {
+    description: 'Registro de rechazos y retrabajos en tareas';
+    displayName: 'Rechazo Tarea';
+    pluralName: 'rechazo-tareas';
+    singularName: 'rechazo-tarea';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    categoria: Schema.Attribute.Enumeration<
+      ['BRIEF_POCO_CLARO', 'NO_CUMPLE_EXPECTATIVAS', 'OTRO']
+    > &
+      Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::rechazo-tarea.rechazo-tarea'
+    > &
+      Schema.Attribute.Private;
+    motivo: Schema.Attribute.Text & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    registradoEn: Schema.Attribute.DateTime;
+    tarea: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::tarea-diseno.tarea-diseno'
+    > &
+      Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiReporteReporte extends Struct.CollectionTypeSchema {
+  collectionName: 'reportes';
+  info: {
+    displayName: 'Reporte Diario';
+    pluralName: 'reportes';
+    singularName: 'reporte';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    avanceLogrado: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    costoManoObra: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    costoMateriales: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    costoTotal: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    fecha: Schema.Attribute.Date & Schema.Attribute.Required;
+    imagenes: Schema.Attribute.Media<undefined, true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::reporte.reporte'
+    > &
+      Schema.Attribute.Private;
+    materiales: Schema.Attribute.JSON;
+    obra: Schema.Attribute.Relation<'manyToOne', 'api::obra.obra'>;
+    obraNombre: Schema.Attribute.String;
+    observaciones: Schema.Attribute.Text;
+    partida: Schema.Attribute.Relation<'manyToOne', 'api::partida.partida'>;
+    partidaCodigo: Schema.Attribute.String;
+    partidaDescripcion: Schema.Attribute.Text;
+    personal: Schema.Attribute.JSON;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    valuacionId: Schema.Attribute.Integer;
+  };
+}
+
+export interface ApiReprogramacionTareaReprogramacionTarea
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'reprogramacion_tareas';
+  info: {
+    description: 'Registro de cambios en fechas de entrega de tareas';
+    displayName: 'Reprogramacion Tarea';
+    pluralName: 'reprogramacion-tareas';
+    singularName: 'reprogramacion-tarea';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    fechaAnterior: Schema.Attribute.DateTime;
+    fechaNueva: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::reprogramacion-tarea.reprogramacion-tarea'
+    > &
+      Schema.Attribute.Private;
+    motivo: Schema.Attribute.Text & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    registradoEn: Schema.Attribute.DateTime;
+    tarea: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::tarea-diseno.tarea-diseno'
+    > &
+      Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -782,6 +1389,75 @@ export interface ApiServicioServicio extends Struct.SingleTypeSchema {
     titulo2: Schema.Attribute.String;
     titulo3: Schema.Attribute.String;
     Titulo4: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiTareaDisenoTareaDiseno extends Struct.CollectionTypeSchema {
+  collectionName: 'tareas_diseno';
+  info: {
+    description: 'Tareas de dise\u00F1o para KPI y productividad';
+    displayName: 'Tarea Dise\u00F1o';
+    pluralName: 'tareas-diseno';
+    singularName: 'tarea-diseno';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    archivos: Schema.Attribute.Media<undefined, true>;
+    arquitectos: Schema.Attribute.Relation<
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
+    cliente: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    comentarios: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::comentario-tarea.comentario-tarea'
+    >;
+    contadorRechazos: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    descripcion: Schema.Attribute.Text;
+    estado: Schema.Attribute.Enumeration<
+      ['PENDIENTE', 'EN_PROCESO', 'COMPLETADA']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'PENDIENTE'>;
+    fechaCompletacion: Schema.Attribute.DateTime;
+    fechaEntregaEstimada: Schema.Attribute.DateTime;
+    fechaEntregaOriginal: Schema.Attribute.DateTime;
+    fechaInicio: Schema.Attribute.DateTime;
+    fechaRequerimiento: Schema.Attribute.DateTime;
+    hito: Schema.Attribute.Relation<'manyToOne', 'api::hito.hito'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::tarea-diseno.tarea-diseno'
+    > &
+      Schema.Attribute.Private;
+    notasInternas: Schema.Attribute.Text;
+    orden: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    proyecto: Schema.Attribute.Relation<'manyToOne', 'api::proyecto.proyecto'>;
+    publicacion: Schema.Attribute.Component<'kpi.publicacion-hito', false>;
+    publishedAt: Schema.Attribute.DateTime;
+    rechazos: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::rechazo-tarea.rechazo-tarea'
+    >;
+    reprogramaciones: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::reprogramacion-tarea.reprogramacion-tarea'
+    >;
+    tipo: Schema.Attribute.Enumeration<['CLIENTE', 'INDEPENDIENTE']> &
+      Schema.Attribute.Required;
+    titulo: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -882,6 +1558,82 @@ export interface ApiTransactionTransaction extends Struct.CollectionTypeSchema {
       'manyToOne',
       'plugin::users-permissions.user'
     >;
+  };
+}
+
+export interface ApiUnidadMedidaUnidadMedida
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'unidad_medidas';
+  info: {
+    description: 'Unidades de medida para materiales de construcci\u00F3n';
+    displayName: 'Unidad de Medida';
+    pluralName: 'unidad-medidas';
+    singularName: 'unidad-medida';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    abreviatura: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::unidad-medida.unidad-medida'
+    > &
+      Schema.Attribute.Private;
+    nombre: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiValuacionValuacion extends Struct.CollectionTypeSchema {
+  collectionName: 'valuaciones';
+  info: {
+    displayName: 'Valuacion';
+    pluralName: 'valuaciones';
+    singularName: 'valuacion';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    costoManoObra: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    costoMateriales: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    costoTotal: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    fecha: Schema.Attribute.Date & Schema.Attribute.Required;
+    lineas: Schema.Attribute.JSON;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::valuacion.valuacion'
+    > &
+      Schema.Attribute.Private;
+    notas: Schema.Attribute.Text;
+    numero: Schema.Attribute.Integer & Schema.Attribute.Required;
+    obra: Schema.Attribute.Relation<'manyToOne', 'api::obra.obra'>;
+    presupuestoModificado: Schema.Attribute.Decimal &
+      Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    totalAumentos: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    totalDisminuciones: Schema.Attribute.Decimal &
+      Schema.Attribute.DefaultTo<0>;
+    totalEjecutado: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    totalExtras: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    totalPresupuesto: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1380,6 +2132,14 @@ export interface PluginUsersPermissionsUser
       'manyToOne',
       'plugin::users-permissions.role'
     >;
+    tareas_como_arquitecto: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::tarea-diseno.tarea-diseno'
+    >;
+    tareas_como_cliente: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::tarea-diseno.tarea-diseno'
+    >;
     transactions: Schema.Attribute.Relation<
       'oneToMany',
       'api::transaction.transaction'
@@ -1408,18 +2168,35 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::bynodorestaurante.bynodorestaurante': ApiBynodorestauranteBynodorestaurante;
       'api::carrousel.carrousel': ApiCarrouselCarrousel;
+      'api::categoria-herramienta.categoria-herramienta': ApiCategoriaHerramientaCategoriaHerramienta;
+      'api::categoria-material.categoria-material': ApiCategoriaMaterialCategoriaMaterial;
       'api::comentario-proyecto.comentario-proyecto': ApiComentarioProyectoComentarioProyecto;
+      'api::comentario-tarea.comentario-tarea': ApiComentarioTareaComentarioTarea;
       'api::comment.comment': ApiCommentComment;
       'api::content-course.content-course': ApiContentCourseContentCourse;
       'api::course.course': ApiCourseCourse;
+      'api::factura-compra.factura-compra': ApiFacturaCompraFacturaCompra;
+      'api::herramienta.herramienta': ApiHerramientaHerramienta;
       'api::hito.hito': ApiHitoHito;
+      'api::material-catalogo.material-catalogo': ApiMaterialCatalogoMaterialCatalogo;
       'api::media-tag.media-tag': ApiMediaTagMediaTag;
+      'api::obra.obra': ApiObraObra;
+      'api::partida-precio-historial.partida-precio-historial': ApiPartidaPrecioHistorialPartidaPrecioHistorial;
+      'api::partida.partida': ApiPartidaPartida;
+      'api::personal.personal': ApiPersonalPersonal;
+      'api::proveedor.proveedor': ApiProveedorProveedor;
       'api::proyecto.proyecto': ApiProyectoProyecto;
+      'api::rechazo-tarea.rechazo-tarea': ApiRechazoTareaRechazoTarea;
+      'api::reporte.reporte': ApiReporteReporte;
+      'api::reprogramacion-tarea.reprogramacion-tarea': ApiReprogramacionTareaReprogramacionTarea;
       'api::resena.resena': ApiResenaResena;
       'api::servicio.servicio': ApiServicioServicio;
+      'api::tarea-diseno.tarea-diseno': ApiTareaDisenoTareaDiseno;
       'api::trabajadore.trabajadore': ApiTrabajadoreTrabajadore;
       'api::trabajosrealizado.trabajosrealizado': ApiTrabajosrealizadoTrabajosrealizado;
       'api::transaction.transaction': ApiTransactionTransaction;
+      'api::unidad-medida.unidad-medida': ApiUnidadMedidaUnidadMedida;
+      'api::valuacion.valuacion': ApiValuacionValuacion;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

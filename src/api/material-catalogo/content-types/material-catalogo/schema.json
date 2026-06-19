@@ -1,0 +1,69 @@
+{
+  "kind": "collectionType",
+  "collectionName": "material_catalogos",
+  "info": {
+    "singularName": "material-catalogo",
+    "pluralName": "material-catalogos",
+    "displayName": "Material Catálogo",
+    "description": "Catálogo de materiales de construcción con control de stock"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "codigo": {
+      "type": "string",
+      "required": false
+    },
+    "nombre": {
+      "type": "string",
+      "required": true
+    },
+    "categoria": {
+      "type": "string",
+      "required": true
+    },
+    "unidad": {
+      "type": "string",
+      "required": true
+    },
+    "stockActual": {
+      "type": "decimal",
+      "default": 0
+    },
+    "stockMinimo": {
+      "type": "decimal",
+      "required": false
+    },
+    "precioPromedio": {
+      "type": "decimal",
+      "default": 0
+    },
+    "ultimaCompra": {
+      "type": "datetime",
+      "required": false
+    },
+    "historialPrecios": {
+      "type": "component",
+      "repeatable": true,
+      "component": "inventario.historial-precio"
+    },
+    "proyectoId": {
+      "type": "integer",
+      "required": false
+    },
+    "proyectoNombre": {
+      "type": "string",
+      "required": false
+    },
+    "obraId": {
+      "type": "integer",
+      "required": false
+    },
+    "obraNombre": {
+      "type": "string",
+      "required": false
+    }
+  }
+}

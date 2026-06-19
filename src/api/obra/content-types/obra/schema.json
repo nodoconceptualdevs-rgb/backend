@@ -1,0 +1,58 @@
+{
+  "kind": "collectionType",
+  "collectionName": "obras",
+  "info": {
+    "singularName": "obra",
+    "pluralName": "obras",
+    "displayName": "Obra"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nombre": {
+      "type": "string",
+      "required": true
+    },
+    "estado": {
+      "type": "enumeration",
+      "enum": [
+        "PREPARACION",
+        "EN_CURSO",
+        "PAUSADA",
+        "COMPLETADA"
+      ],
+      "default": "PREPARACION"
+    },
+    "fecha_inicio": {
+      "type": "datetime",
+      "required": true
+    },
+    "fecha_fin_planificada": {
+      "type": "datetime",
+      "required": true
+    },
+    "fecha_fin_real": {
+      "type": "datetime",
+      "required": false
+    },
+    "presupuesto_total": {
+      "type": "decimal",
+      "required": true
+    },
+    "presupuesto_consumido": {
+      "type": "decimal",
+      "default": 0
+    },
+    "notas": {
+      "type": "text",
+      "required": false
+    },
+    "proyecto": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::proyecto.proyecto"
+    }
+  }
+}

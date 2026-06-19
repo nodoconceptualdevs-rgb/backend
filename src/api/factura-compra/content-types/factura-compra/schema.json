@@ -1,0 +1,91 @@
+{
+  "kind": "collectionType",
+  "collectionName": "factura_compras",
+  "info": {
+    "singularName": "factura-compra",
+    "pluralName": "factura-compras",
+    "displayName": "Factura de Compra",
+    "description": "Facturas de compra de materiales para obras"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "numero": {
+      "type": "string",
+      "required": true
+    },
+    "proveedorNombre": {
+      "type": "string",
+      "required": false
+    },
+    "proveedorRut": {
+      "type": "string",
+      "required": false
+    },
+    "proveedor": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::proveedor.proveedor"
+    },
+    "fecha": {
+      "type": "date",
+      "required": true
+    },
+    "fechaRecepcion": {
+      "type": "date",
+      "required": false
+    },
+    "estado": {
+      "type": "enumeration",
+      "enum": ["APROBADA", "PAGADA", "ANULADA"],
+      "default": "APROBADA"
+    },
+    "proyectoId": {
+      "type": "integer",
+      "required": false
+    },
+    "proyectoNombre": {
+      "type": "string",
+      "required": false
+    },
+    "obraId": {
+      "type": "integer",
+      "required": false
+    },
+    "obraNombre": {
+      "type": "string",
+      "required": false
+    },
+    "subtotal": {
+      "type": "decimal",
+      "default": 0
+    },
+    "impuesto": {
+      "type": "decimal",
+      "required": false
+    },
+    "total": {
+      "type": "decimal",
+      "default": 0
+    },
+    "notas": {
+      "type": "text",
+      "required": false
+    },
+    "archivoPdf": {
+      "type": "string",
+      "required": false
+    },
+    "inhabilitada": {
+      "type": "boolean",
+      "default": false
+    },
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "inventario.linea-factura"
+    }
+  }
+}

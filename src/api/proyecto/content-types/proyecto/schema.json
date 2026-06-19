@@ -67,6 +67,18 @@
       "default": true,
       "required": false,
       "description": "Si es false, requiere autenticación para ver el proyecto"
+    },
+    "biblioteca": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": ["images", "files", "videos"]
+    },
+    "obras": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::obra.obra",
+      "mappedBy": "proyecto"
     }
   }
 }

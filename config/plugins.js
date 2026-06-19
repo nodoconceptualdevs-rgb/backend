@@ -3,7 +3,7 @@
 const handleUploadError = (file) => {
   // Ignora errores específicos de borrado de archivos temporales (EPERMS)
 
-  if (file?.error?.code === "EPERMS" || file?.error?.code === "ENOENT") {
+  if (file?.error?.code === "EPERM" || file?.error?.code === "ENOENT") {
     console.log("Error de permisos ignorado en archivo temporal:", file?.name);
 
     return true; // Devuelve true para continuar a pesar del error

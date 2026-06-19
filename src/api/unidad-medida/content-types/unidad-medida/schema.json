@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "unidad_medidas",
+  "info": {
+    "singularName": "unidad-medida",
+    "pluralName": "unidad-medidas",
+    "displayName": "Unidad de Medida",
+    "description": "Unidades de medida para materiales de construcción"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nombre": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "abreviatura": {
+      "type": "string",
+      "required": false
+    }
+  }
+}
