@@ -58,6 +58,9 @@
       "type": "boolean",
       "default": false
     },
+    "partidaOriginalId": {
+      "type": "integer"
+    },
     "obra": {
       "type": "relation",
       "relation": "manyToOne",

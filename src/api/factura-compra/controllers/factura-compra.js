@@ -106,6 +106,69 @@ async function revertirStockDesdeItems(strapi, items) {
 
 module.exports = createCoreController('api::factura-compra.factura-compra', ({ strapi }) => ({
 
+  // ─── Nested: GET /obras/:obraId/factura-compras ───────────────────────────
+  async getFacturasByObra(ctx) {
+    const { obraId } = ctx.params;
+    if (!obraId) return ctx.badRequest('obraId is required');
+    try {
+      const facturas = await strapi.entityService.findMany('api::factura-compra.factura-compra', {
+        filters: { obra: { id: parseInt(obraId) } },
+        populate: { items: true, proveedor: true },
+        orderBy: { createdAt: 'desc' },
+      });
+      return ctx.send({ data: facturas });
+    } catch (error) {
+      console.error('[ERROR] getFacturasByObra:', error);
+      ctx.throw(500, 'Error fetching facturas');
+    }
+  },
+
+  // ─── Nested: POST /obras/:obraId/factura-compras ──────────────────────────
+  async createFacturaForObra(ctx) {
+    const { obraId } = ctx.params;
+    if (!obraId) return ctx.badRequest('obraId is required');
+    try {
+      const obra = await strapi.entityService.findOne('api::obra.obra', parseInt(obraId));
+      if (!obra) return ctx.notFound('Obra not found');
+
+      const data = ctx.request.body.data || {};
+
+      if (!data.numero || data.numero.trim() === '') {
+        const ahora = new Date();
+        const year = ahora.getFullYear();
+        const dia = String(ahora.getDate()).padStart(2, '0');
+        const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+        const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+        const manana = new Date(hoy); manana.setDate(manana.getDate() + 1);
+        const facturasHoy = await strapi.entityService.findMany('api::factura-compra.factura-compra', {
+          filters: { createdAt: { $gte: hoy.toISOString(), $lt: manana.toISOString() } },
+          sort: { createdAt: 'desc' }, limit: 1,
+        });
+        let secuencial = 1;
+        if (facturasHoy.length > 0) {
+          const match = facturasHoy[0].numero.match(/\d+-\d+-(\d+)/);
+          if (match) secuencial = parseInt(match[1]) + 1;
+        }
+        data.numero = `${year}-${dia}${mes}-${String(secuencial).padStart(4, '0')}`;
+      }
+
+      const factura = await strapi.entityService.create('api::factura-compra.factura-compra', {
+        data: { ...data, obra: parseInt(obraId), obraId: parseInt(obraId), obraNombre: obra.nombre },
+        populate: { items: true, proveedor: true },
+      });
+
+      if (factura.estado === 'APROBADA' && factura.items?.length > 0) {
+        await actualizarStockDesdeItems(strapi, factura.items);
+      }
+
+      console.log(`[FACTURA] Created: ${factura.id} for obra ${obraId}`);
+      return ctx.send({ data: factura }, 201);
+    } catch (error) {
+      console.error('[ERROR] createFacturaForObra:', error);
+      ctx.throw(500, 'Error creating factura');
+    }
+  },
+
   async find(ctx) {
     return super.find(ctx);
   },

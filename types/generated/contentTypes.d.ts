@@ -736,6 +736,7 @@ export interface ApiFacturaCompraFacturaCompra
       Schema.Attribute.Private;
     notas: Schema.Attribute.Text;
     numero: Schema.Attribute.String & Schema.Attribute.Required;
+    obra: Schema.Attribute.Relation<'manyToOne', 'api::obra.obra'>;
     obraId: Schema.Attribute.Integer;
     obraNombre: Schema.Attribute.String;
     proveedor: Schema.Attribute.Relation<
@@ -1066,6 +1067,7 @@ export interface ApiPartidaPartida extends Struct.CollectionTypeSchema {
       > &
       Schema.Attribute.DefaultTo<0>;
     obra: Schema.Attribute.Relation<'manyToOne', 'api::obra.obra'>;
+    partidaOriginalId: Schema.Attribute.Integer;
     precioUnitario: Schema.Attribute.Decimal &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
@@ -1105,6 +1107,7 @@ export interface ApiPersonalPersonal extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     nombre: Schema.Attribute.String & Schema.Attribute.Required;
+    obra: Schema.Attribute.Relation<'manyToOne', 'api::obra.obra'>;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1275,6 +1278,14 @@ export interface ApiReporteReporte extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     materiales: Schema.Attribute.JSON;
+    montoAplicado: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
     obra: Schema.Attribute.Relation<'manyToOne', 'api::obra.obra'>;
     obraNombre: Schema.Attribute.String;
     observaciones: Schema.Attribute.Text;
