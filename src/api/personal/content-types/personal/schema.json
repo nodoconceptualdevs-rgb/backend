@@ -10,6 +10,11 @@
   "attributes": {
     "nombre":       { "type": "string",  "required": true },
     "cargo":        { "type": "string",  "required": true },
-    "costoPorHora": { "type": "decimal", "required": true }
+    "costoPorHora": { "type": "decimal", "required": true },
+    "obra": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::obra.obra"
+    }
   }
 }

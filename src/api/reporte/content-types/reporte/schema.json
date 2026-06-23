@@ -20,6 +20,11 @@
       "required": true,
       "min": 0
     },
+    "montoAplicado": {
+      "type": "decimal",
+      "min": 0,
+      "default": 0
+    },
     "observaciones": {
       "type": "text"
     },

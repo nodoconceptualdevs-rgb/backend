@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "2026-06-19T15:02:11.253Z"
+    "x-generation-date": "2026-06-23T08:05:17.071Z"
   },
   "x-strapi-config": {
     "plugins": [
@@ -25727,6 +25727,9 @@
               },
               "esExtra": {
                 "type": "boolean"
+              },
+              "partidaOriginalId": {
+                "type": "integer"
               },
               "obra": {
                 "type": "object",

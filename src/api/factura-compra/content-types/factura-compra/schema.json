@@ -58,6 +58,11 @@
       "type": "string",
       "required": false
     },
+    "obra": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::obra.obra"
+    },
     "subtotal": {
       "type": "decimal",
       "default": 0

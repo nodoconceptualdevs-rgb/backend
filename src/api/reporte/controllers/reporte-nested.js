@@ -48,30 +48,46 @@ module.exports = {
     const {
       partidaId,
       fecha,
-      avanceLogrado,
+      montoAplicado,
       observaciones,
       personal,
       materiales,
       costoManoObra,
       costoMateriales,
       costoTotal,
+      existingImageIds,
     } = data;
 
-    if (!obraId || !partidaId || !fecha || avanceLogrado === undefined) {
-      return ctx.badRequest('obraId, partidaId, fecha and avanceLogrado are required');
+    if (!obraId || !partidaId || !fecha || montoAplicado === undefined) {
+      return ctx.badRequest('obraId, partidaId, fecha and montoAplicado are required');
+    }
+
+    if (montoAplicado <= 0) {
+      return ctx.badRequest('montoAplicado debe ser mayor a 0');
     }
 
     try {
       const obra = await strapi.entityService.findOne('api::obra.obra', parseInt(obraId));
       if (!obra) return ctx.notFound('Obra not found');
 
-      const partida = await strapi.entityService.findOne('api::partida.partida', parseInt(partidaId));
-      if (!partida) return ctx.notFound('Partida not found');
+      const [partida] = await strapi.entityService.findMany('api::partida.partida', {
+        filters: { id: parseInt(partidaId), obra: { id: parseInt(obraId) } },
+      });
+      if (!partida) return ctx.badRequest('Partida does not belong to this obra');
+
+      if ((partida.avancePorcentaje || 0) >= 100) {
+        return ctx.badRequest('Esta partida ya está ejecutada al 100%. Crea una partida extra para trabajo adicional.');
+      }
+
+      // Derive % from $ amount
+      const montoPresupuestado = (partida.cantidadPresupuestada || 0) * (partida.precioUnitario || 0);
+      const avanceLogrado = montoPresupuestado > 0 ? (montoAplicado / montoPresupuestado) * 100 : 0;
 
       const reporte = await strapi.entityService.create('api::reporte.reporte', {
         data: {
           fecha,
           avanceLogrado,
+          montoAplicado,
           observaciones: observaciones || '',
           personal: personal || [],
           materiales: materiales || [],
@@ -86,14 +102,13 @@ module.exports = {
         },
       });
 
-      // Manejar imágenes subidas
+      // Manejar imágenes nuevas subidas como multipart
       const files = ctx.request.files?.imagenes;
       if (files && (Array.isArray(files) ? files.length > 0 : files)) {
         try {
           const imagenesToUpload = Array.isArray(files) ? files : [files];
-
           for (const file of imagenesToUpload) {
-            const uploadedFile = await strapi.plugins.upload.services.upload.upload({
+            await strapi.plugins.upload.services.upload.upload({
               files: file,
               ref: 'api::reporte.reporte',
               refId: reporte.id,
@@ -102,18 +117,30 @@ module.exports = {
           }
         } catch (uploadError) {
           console.error('[ERROR] Upload imagenes:', uploadError);
-          // No fallar si hay error en imágenes, el reporte ya se creó
         }
       }
 
-      // Update partida: increment cantidadEjecutada based on avance
-      const cantidadPorAvance = (avanceLogrado / 100) * (partida.cantidadPresupuestada || 0);
-      const cantidadActual = partida.cantidadEjecutada || 0;
-      const cantidadAIncrementar = Math.max(0, cantidadPorAvance - cantidadActual);
+      // Linkear imágenes existentes de la biblioteca
+      if (existingImageIds && existingImageIds.length > 0) {
+        try {
+          const ids = existingImageIds.map(id => parseInt(id));
+          await strapi.entityService.update('api::reporte.reporte', reporte.id, {
+            data: { imagenes: ids },
+          });
+        } catch (linkError) {
+          console.error('[ERROR] Link existing images:', linkError);
+        }
+      }
 
-      if (cantidadAIncrementar > 0) {
-        const nuevaCantidad = cantidadActual + cantidadAIncrementar;
-        const nuevoMonto = nuevaCantidad * (partida.precioUnitario || 0);
+      // Update partida: use montoAplicado to derive quantity increment
+      const precioUnit = partida.precioUnitario || 0;
+      const incremento = precioUnit > 0 ? montoAplicado / precioUnit : 0;
+      if (incremento > 0) {
+        const nuevaCantidad = Math.min(
+          (partida.cantidadEjecutada || 0) + incremento,
+          partida.cantidadPresupuestada || 0
+        );
+        const nuevoMonto = nuevaCantidad * precioUnit;
         const nuevoAvance = (partida.cantidadPresupuestada || 0) > 0
           ? (nuevaCantidad / partida.cantidadPresupuestada) * 100
           : 0;
