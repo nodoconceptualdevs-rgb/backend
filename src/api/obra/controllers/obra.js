@@ -13,7 +13,7 @@ module.exports = createCoreController('api::obra.obra', ({ strapi }) => ({
 
       if (user.role.type === 'admin') {
         obras = await strapi.entityService.findMany('api::obra.obra', {
-          populate: { proyecto: true },
+          populate: { proyecto: true, gerentes: true },
           orderBy: { createdAt: 'desc' }
         });
       } else if (user.role.type === 'gerente_de_proyecto') {
@@ -24,13 +24,14 @@ module.exports = createCoreController('api::obra.obra', ({ strapi }) => ({
 
         const idsProyectos = proyectosDelGerente.map(p => p.id);
 
-        if (idsProyectos.length === 0) {
-          return ctx.send({ data: [] });
-        }
-
         obras = await strapi.entityService.findMany('api::obra.obra', {
-          filters: { proyecto: { id: { $in: idsProyectos } } },
-          populate: { proyecto: true },
+          filters: {
+            $or: [
+              { proyecto: { id: { $in: idsProyectos } } },
+              { gerentes: { id: user.id } }
+            ]
+          },
+          populate: { proyecto: true, gerentes: true },
           orderBy: { createdAt: 'desc' }
         });
       } else {
@@ -52,14 +53,21 @@ module.exports = createCoreController('api::obra.obra', ({ strapi }) => ({
     }
 
     try {
+      const data = { ...ctx.request.body.data };
+
+      if (user.role.type === 'gerente_de_proyecto') {
+        const gerentesExistentes = Array.isArray(data.gerentes) ? data.gerentes : [];
+        data.gerentes = Array.from(new Set([...gerentesExistentes, user.id]));
+      }
+
       const obra = await strapi.entityService.create('api::obra.obra', {
-        data: ctx.request.body.data,
-        populate: { proyecto: true }
+        data,
+        populate: { proyecto: true, gerentes: true }
       });
 
       console.log(`[OBRA] Obra creada: ${obra.id} por usuario ${user.id} (${user.role.type})`);
 
-      return ctx.send({ data: obra });
+      return ctx.created({ data: obra });
     } catch (error) {
       console.error('[ERROR] crear-obra:', error);
       ctx.throw(500, 'Error creando obra');

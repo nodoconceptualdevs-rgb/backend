@@ -942,6 +942,10 @@ export interface ApiObraObra extends Struct.CollectionTypeSchema {
       Schema.Attribute.Required;
     fecha_fin_real: Schema.Attribute.DateTime;
     fecha_inicio: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    gerentes: Schema.Attribute.Relation<
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::obra.obra'> &
       Schema.Attribute.Private;
