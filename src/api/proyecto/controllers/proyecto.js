@@ -167,7 +167,8 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
               populate: ['contenido']
             },
             clientes: true,
-            gerentes: true
+            gerentes: true,
+            obras: true
           }
         });
 
@@ -186,7 +187,8 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
             populate: ['contenido']
           },
           clientes: true,
-          gerentes: true
+          gerentes: true,
+          obras: true
         }
       });
 
@@ -212,6 +214,7 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
       populate: {
         gerentes: true,
         clientes: true,
+        obras: true,
         hitos: {
           populate: {
             contenido: {

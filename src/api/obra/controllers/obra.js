@@ -1,5 +1,26 @@
 const { createCoreController } = require('@strapi/strapi').factories;
 
+/**
+ * Verifica la regla 1:1 entre proyecto y obra.
+ * Devuelve true si el proyecto objetivo ya tiene una obra vinculada
+ * (excluyendo, opcionalmente, la obra que se está editando).
+ */
+async function proyectoYaTieneObra(strapi, proyectoId, obraIdExcluir = null) {
+  if (!proyectoId) return false;
+
+  const obrasVinculadas = await strapi.entityService.findMany('api::obra.obra', {
+    filters: { proyecto: { id: proyectoId } },
+    fields: ['id', 'documentId']
+  });
+
+  // La ruta v5 puede llegar con documentId o id numérico; excluimos por ambos.
+  return obrasVinculadas.some(
+    (o) =>
+      String(o.id) !== String(obraIdExcluir) &&
+      String(o.documentId) !== String(obraIdExcluir)
+  );
+}
+
 module.exports = createCoreController('api::obra.obra', ({ strapi }) => ({
   async find(ctx) {
     const user = ctx.state.user;
@@ -60,6 +81,12 @@ module.exports = createCoreController('api::obra.obra', ({ strapi }) => ({
         data.gerentes = Array.from(new Set([...gerentesExistentes, user.id]));
       }
 
+      // Guardia 1:1 — un proyecto solo puede tener una obra vinculada
+      const proyectoId = data.proyecto?.id ?? data.proyecto;
+      if (await proyectoYaTieneObra(strapi, proyectoId)) {
+        return ctx.badRequest('Este proyecto ya tiene una obra vinculada');
+      }
+
       const obra = await strapi.entityService.create('api::obra.obra', {
         data,
         populate: { proyecto: true, gerentes: true }
@@ -72,5 +99,27 @@ module.exports = createCoreController('api::obra.obra', ({ strapi }) => ({
       console.error('[ERROR] crear-obra:', error);
       ctx.throw(500, 'Error creando obra');
     }
+  },
+
+  async update(ctx) {
+    const user = ctx.state.user;
+
+    if (!user || (user.role.type !== 'admin' && user.role.type !== 'gerente_de_proyecto')) {
+      return ctx.forbidden('Solo administradores y gerentes pueden editar obras');
+    }
+
+    const { id } = ctx.params;
+    const data = ctx.request.body.data || {};
+
+    // Guardia 1:1 — solo si se intenta (re)vincular a un proyecto
+    if (data.proyecto !== undefined && data.proyecto !== null) {
+      const proyectoId = data.proyecto?.id ?? data.proyecto;
+      if (await proyectoYaTieneObra(strapi, proyectoId, id)) {
+        return ctx.badRequest('Este proyecto ya tiene una obra vinculada');
+      }
+    }
+
+    // Delegar en el core controller para preservar la semántica documentId de Strapi v5
+    return await super.update(ctx);
   }
 }));
