@@ -1,35 +1,14 @@
-// Usar crypto nativo de Node.js (módulo estándar, no requiere instalación)
-const crypto = require('crypto');
-
-/**
- * Genera un token único seguro utilizando criptografía
- * @param {number} length Longitud del token (por defecto 16 caracteres)
- * @returns {string} Token único seguro
- */
-function generateSecureToken(length = 16) {
-  // Generar más bytes de los necesarios para asegurar tener suficientes después de limpiar
-  const buffer = crypto.randomBytes(length * 2); // Generar el doble para compensar caracteres eliminados
-  let token = buffer.toString('base64')
-    .replace(/[+/=]/g, ''); // Eliminar caracteres no alfanuméricos
-  
-  // Asegurar longitud exacta
-  while (token.length < length) {
-    // Si aún es muy corto, generar más
-    const extraBuffer = crypto.randomBytes(length);
-    token += extraBuffer.toString('base64').replace(/[+/=]/g, '');
-  }
-  
-  return token.slice(0, length);
-}
+const { generateSecureToken } = require('../../utils/token-generator');
 
 module.exports = {
   /**
    * Genera token NFC único antes de crear el proyecto
+   * CRÍTICO: generateSecureToken es infalible y SIEMPRE retorna un token válido
    */
   async beforeCreate(event) {
     const { data } = event.params;
-    
-    // Si no tiene token, generar uno único
+
+    // Si no tiene token, generar uno (generateSecureToken NUNCA falla)
     if (!data.token_nfc) {
       data.token_nfc = generateSecureToken(16);
       console.log('✅ Token NFC generado:', data.token_nfc);
@@ -41,7 +20,15 @@ module.exports = {
    */
   async afterCreate(event) {
     const { result } = event;
-    
+
+    // CRÍTICO: Validar que el proyecto tiene token
+    if (!result.token_nfc) {
+      console.error('❌ CRÍTICO: Proyecto creado sin token_nfc:', result.id);
+      throw new Error('El proyecto fue creado sin token NFC. Esto es un error crítico.');
+    }
+
+    console.log(`✅ Proyecto ${result.id} creado con token: ${result.token_nfc}`);
+
     const hitosIniciales = [
       { nombre: 'Conceptualización (Diseño)', orden: 1 },
       { nombre: 'Planificación (Técnico)', orden: 2 },

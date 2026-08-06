@@ -1,8 +1,13 @@
 'use strict';
 
 const { createCoreController } = require('@strapi/strapi').factories;
+const { obtenerUsuarioDesdeToken } = require('../../../utils/permisos-obra');
 
 const ESTADOS_VALIDOS = ['DISPONIBLE', 'EN_USO', 'MANTENIMIENTO', 'DESCARTADA'];
+
+function generarCodigoParaId(id) {
+  return `HER-${String(id).padStart(6, '0')}`;
+}
 
 module.exports = createCoreController('api::herramienta.herramienta', ({ strapi }) => ({
 
@@ -22,7 +27,15 @@ module.exports = createCoreController('api::herramienta.herramienta', ({ strapi 
     if (user.role?.type !== 'admin' && user.role?.type !== 'gerente_de_proyecto') {
       return ctx.forbidden('Sin permisos para crear herramientas');
     }
-    return super.create(ctx);
+    const { data } = await super.create(ctx);
+    if (!data.codigo) {
+      const updated = await strapi.entityService.update(
+        'api::herramienta.herramienta', data.id,
+        { data: { codigo: generarCodigoParaId(data.id) } }
+      );
+      return ctx.send({ data: updated });
+    }
+    return ctx.send({ data });
   },
 
   async update(ctx) {
@@ -41,6 +54,30 @@ module.exports = createCoreController('api::herramienta.herramienta', ({ strapi 
       return ctx.forbidden('Sin permisos para eliminar herramientas');
     }
     return super.delete(ctx);
+  },
+
+  async generarCodigo(ctx) {
+    // ruta con auth: false (nunca se habilitó en el panel de Roles);
+    // se valida el JWT a mano, mismo patrón que permisos-obra.js
+    const user = await obtenerUsuarioDesdeToken(ctx);
+    if (!user) return ctx.unauthorized('Debes estar autenticado');
+    if (user.role?.type !== 'admin' && user.role?.type !== 'gerente_de_proyecto') {
+      return ctx.forbidden('Sin permisos para generar códigos de herramientas');
+    }
+
+    const { id } = ctx.params;
+    const herramienta = await strapi.entityService.findOne('api::herramienta.herramienta', id);
+    if (!herramienta) return ctx.notFound('Herramienta no encontrada');
+
+    if (herramienta.codigo) {
+      return ctx.send({ data: herramienta });
+    }
+
+    const updated = await strapi.entityService.update(
+      'api::herramienta.herramienta', id,
+      { data: { codigo: generarCodigoParaId(id) } }
+    );
+    return ctx.send({ data: updated });
   },
 
   async updateEstado(ctx) {

@@ -28,6 +28,22 @@
       "type": "string",
       "required": true
     },
+    "serie": {
+      "type": "string",
+      "required": false
+    },
+    "marca": {
+      "type": "string",
+      "required": false
+    },
+    "unidad": {
+      "type": "string",
+      "required": false
+    },
+    "ubicacionDeposito": {
+      "type": "string",
+      "required": false
+    },
     "fechaAdquisicion": {
       "type": "date",
       "required": false

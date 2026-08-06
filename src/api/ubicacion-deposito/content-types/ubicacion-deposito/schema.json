@@ -1,0 +1,21 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ubicacion_depositos",
+  "info": {
+    "singularName": "ubicacion-deposito",
+    "pluralName": "ubicacion-depositos",
+    "displayName": "Ubicación en Depósito",
+    "description": "Ubicaciones físicas dentro del depósito para clasificar herramientas"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nombre": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    }
+  }
+}

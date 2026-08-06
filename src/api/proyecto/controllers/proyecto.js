@@ -1,4 +1,5 @@
 const { createCoreController } = require('@strapi/strapi').factories;
+const { generateSecureToken } = require('../utils/token-generator');
 
 module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => ({
   /**
@@ -147,9 +148,20 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
       return ctx.unauthorized('Debes estar autenticado');
     }
 
-    // Admin puede ver todos los proyectos sin filtros adicionales
+    // Admin puede ver todos los proyectos con populates
     if (user.role.type === 'admin') {
-      return await super.find(ctx);
+      const proyectos = await strapi.entityService.findMany('api::proyecto.proyecto', {
+        populate: {
+          hitos: {
+            populate: ['contenido']
+          },
+          clientes: true,
+          gerentes: true,
+          obras: true
+        }
+      });
+
+      return ctx.send({ data: proyectos });
     }
 
     try {
@@ -240,6 +252,9 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
       return ctx.forbidden('No tienes permiso para ver este proyecto');
     }
 
+    console.log('[DEBUG] Proyecto obras:', proyecto.obras);
+    console.log('[DEBUG] Proyecto completo:', JSON.stringify(proyecto, null, 2));
+
     return ctx.send({ data: proyecto });
   },
 
@@ -273,9 +288,7 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
     }
 
     try {
-      // Usar crypto nativo en lugar de nanoid
-      const crypto = require('crypto');
-      const nuevoToken = crypto.randomBytes(12).toString('base64').replace(/[+/=]/g, '').slice(0, 16);
+      const nuevoToken = generateSecureToken(16);
 
       const proyectoActualizado = await strapi.entityService.update('api::proyecto.proyecto', id, {
         data: {
@@ -313,10 +326,6 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
     const { nombre_proyecto, fecha_inicio, estado_general, clientes, gerentes } = ctx.request.body.data;
 
     try {
-      // Generar token NFC único usando crypto nativo
-      const crypto = require('crypto');
-      const tokenNFC = crypto.randomBytes(12).toString('base64').replace(/[+/=]/g, '').slice(0, 16);
-
       // Si es gerente, asegurarse de que esté asignado
       let gerentesFinales = gerentes;
       if (user.role.type === 'gerente_de_proyecto') {
@@ -326,13 +335,12 @@ module.exports = createCoreController('api::proyecto.proyecto', ({ strapi }) => 
         }
       }
 
-      // Crear proyecto sin hitos
+      // Crear proyecto - el token NFC se genera automáticamente en beforeCreate lifecycle
       const proyecto = await strapi.entityService.create('api::proyecto.proyecto', {
         data: {
           nombre_proyecto,
           fecha_inicio,
           estado_general: estado_general || 'En Planificación',
-          token_nfc: tokenNFC,
           clientes,
           gerentes: gerentesFinales
         }

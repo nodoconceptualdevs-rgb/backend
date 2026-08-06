@@ -18,7 +18,7 @@
     },
     "token_nfc": {
       "type": "uid",
-      "required": true,
+      "required": false,
       "unique": true
     },
     "estado_general": {

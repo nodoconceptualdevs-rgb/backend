@@ -52,12 +52,24 @@
     "proyecto": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::proyecto.proyecto"
+      "target": "api::proyecto.proyecto",
+      "inversedBy": "obras"
     },
     "gerentes": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "plugin::users-permissions.user"
+    },
+    "capataz": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::personal.personal"
+    },
+    "gerente_permisos": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::obra-gerente-permiso.obra-gerente-permiso",
+      "mappedBy": "obra"
     }
   }
 }

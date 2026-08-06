@@ -1,0 +1,52 @@
+{
+  "kind": "collectionType",
+  "collectionName": "historial_obras",
+  "info": {
+    "singularName": "historial-obra",
+    "pluralName": "historial-obras",
+    "displayName": "Historial de Obra",
+    "description": "Registro de auditoría inmutable de acciones sobre obras"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "obra": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::obra.obra"
+    },
+    "obraNombre": {
+      "type": "string"
+    },
+    "obraIdOriginal": {
+      "type": "integer"
+    },
+    "usuario": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "usuarioNombre": {
+      "type": "string"
+    },
+    "usuarioRol": {
+      "type": "string"
+    },
+    "modulo": {
+      "type": "enumeration",
+      "enum": ["partidas", "reportes", "personal", "valuaciones", "inventario", "equipo", "obra"]
+    },
+    "accion": {
+      "type": "enumeration",
+      "enum": ["CREAR", "EDITAR", "ELIMINAR", "CAMBIO_ESTADO"]
+    },
+    "descripcion": {
+      "type": "text"
+    },
+    "cambios": {
+      "type": "json"
+    }
+  }
+}

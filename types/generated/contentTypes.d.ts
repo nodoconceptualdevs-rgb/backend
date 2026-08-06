@@ -793,14 +793,72 @@ export interface ApiHerramientaHerramienta extends Struct.CollectionTypeSchema {
       'api::herramienta.herramienta'
     > &
       Schema.Attribute.Private;
+    marca: Schema.Attribute.String;
     nombre: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
+    serie: Schema.Attribute.String;
+    ubicacionDeposito: Schema.Attribute.String;
     ultimoUsoFecha: Schema.Attribute.DateTime;
     ultimoUsoObraId: Schema.Attribute.Integer;
     ultimoUsoObraNombre: Schema.Attribute.String;
+    unidad: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiHistorialObraHistorialObra
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'historial_obras';
+  info: {
+    description: 'Registro de auditor\u00EDa inmutable de acciones sobre obras';
+    displayName: 'Historial de Obra';
+    pluralName: 'historial-obras';
+    singularName: 'historial-obra';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    accion: Schema.Attribute.Enumeration<
+      ['CREAR', 'EDITAR', 'ELIMINAR', 'CAMBIO_ESTADO']
+    >;
+    cambios: Schema.Attribute.JSON;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    descripcion: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::historial-obra.historial-obra'
+    > &
+      Schema.Attribute.Private;
+    modulo: Schema.Attribute.Enumeration<
+      [
+        'partidas',
+        'reportes',
+        'personal',
+        'valuaciones',
+        'inventario',
+        'equipo',
+        'obra',
+      ]
+    >;
+    obra: Schema.Attribute.Relation<'manyToOne', 'api::obra.obra'>;
+    obraIdOriginal: Schema.Attribute.Integer;
+    obraNombre: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    usuario: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    usuarioNombre: Schema.Attribute.String;
+    usuarioRol: Schema.Attribute.String;
   };
 }
 
@@ -920,6 +978,79 @@ export interface ApiMediaTagMediaTag extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiObraGerentePermisoObraGerentePermiso
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'obra_gerente_permisos';
+  info: {
+    description: 'Define los permisos de cada gerente en una obra espec\u00EDfica';
+    displayName: 'Permiso Gerente Obra';
+    pluralName: 'obra-gerente-permisos';
+    singularName: 'obra-gerente-permiso';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    analitica: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<{
+        read: false;
+      }>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    gerente: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    historial: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<{
+        read: false;
+      }>;
+    inventario: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<{
+        create: false;
+        delete: false;
+        read: false;
+        update: false;
+      }>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::obra-gerente-permiso.obra-gerente-permiso'
+    > &
+      Schema.Attribute.Private;
+    obra: Schema.Attribute.Relation<'manyToOne', 'api::obra.obra'>;
+    partidas: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<{
+        create: false;
+        delete: false;
+        read: false;
+        update: false;
+      }>;
+    personal: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<{
+        create: false;
+        delete: false;
+        read: false;
+        update: false;
+      }>;
+    publishedAt: Schema.Attribute.DateTime;
+    reportes: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<{
+        create: false;
+        read: false;
+      }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    valuaciones: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<{
+        create: false;
+        read: false;
+      }>;
+  };
+}
+
 export interface ApiObraObra extends Struct.CollectionTypeSchema {
   collectionName: 'obras';
   info: {
@@ -931,6 +1062,7 @@ export interface ApiObraObra extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    capataz: Schema.Attribute.Relation<'oneToOne', 'api::personal.personal'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -942,6 +1074,10 @@ export interface ApiObraObra extends Struct.CollectionTypeSchema {
       Schema.Attribute.Required;
     fecha_fin_real: Schema.Attribute.DateTime;
     fecha_inicio: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    gerente_permisos: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::obra-gerente-permiso.obra-gerente-permiso'
+    >;
     gerentes: Schema.Attribute.Relation<
       'manyToMany',
       'plugin::users-permissions.user'
@@ -1198,9 +1334,7 @@ export interface ApiProyectoProyecto extends Struct.CollectionTypeSchema {
     nombre_proyecto: Schema.Attribute.String & Schema.Attribute.Required;
     obras: Schema.Attribute.Relation<'oneToMany', 'api::obra.obra'>;
     publishedAt: Schema.Attribute.DateTime;
-    token_nfc: Schema.Attribute.UID &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
+    token_nfc: Schema.Attribute.UID & Schema.Attribute.Unique;
     ultimo_avance: Schema.Attribute.Text;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1573,6 +1707,84 @@ export interface ApiTransactionTransaction extends Struct.CollectionTypeSchema {
       'manyToOne',
       'plugin::users-permissions.user'
     >;
+  };
+}
+
+export interface ApiTransferenciaMaterialTransferenciaMaterial
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'transferencia_materiales';
+  info: {
+    description: 'Movimientos de stock de materiales entre obras o hacia/desde el inventario general de Nodo';
+    displayName: 'Transferencia de Material';
+    pluralName: 'transferencia-materiales';
+    singularName: 'transferencia-material';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    cantidad: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::transferencia-material.transferencia-material'
+    > &
+      Schema.Attribute.Private;
+    material: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::material-catalogo.material-catalogo'
+    >;
+    materialNombre: Schema.Attribute.String;
+    nota: Schema.Attribute.Text;
+    obraDestino: Schema.Attribute.Relation<'manyToOne', 'api::obra.obra'>;
+    obraDestinoNombre: Schema.Attribute.String;
+    obraOrigen: Schema.Attribute.Relation<'manyToOne', 'api::obra.obra'>;
+    obraOrigenNombre: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    unidad: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    usuario: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    usuarioNombre: Schema.Attribute.String;
+  };
+}
+
+export interface ApiUbicacionDepositoUbicacionDeposito
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'ubicacion_depositos';
+  info: {
+    description: 'Ubicaciones f\u00EDsicas dentro del dep\u00F3sito para clasificar herramientas';
+    displayName: 'Ubicaci\u00F3n en Dep\u00F3sito';
+    pluralName: 'ubicacion-depositos';
+    singularName: 'ubicacion-deposito';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::ubicacion-deposito.ubicacion-deposito'
+    > &
+      Schema.Attribute.Private;
+    nombre: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -2192,9 +2404,11 @@ declare module '@strapi/strapi' {
       'api::course.course': ApiCourseCourse;
       'api::factura-compra.factura-compra': ApiFacturaCompraFacturaCompra;
       'api::herramienta.herramienta': ApiHerramientaHerramienta;
+      'api::historial-obra.historial-obra': ApiHistorialObraHistorialObra;
       'api::hito.hito': ApiHitoHito;
       'api::material-catalogo.material-catalogo': ApiMaterialCatalogoMaterialCatalogo;
       'api::media-tag.media-tag': ApiMediaTagMediaTag;
+      'api::obra-gerente-permiso.obra-gerente-permiso': ApiObraGerentePermisoObraGerentePermiso;
       'api::obra.obra': ApiObraObra;
       'api::partida-precio-historial.partida-precio-historial': ApiPartidaPrecioHistorialPartidaPrecioHistorial;
       'api::partida.partida': ApiPartidaPartida;
@@ -2210,6 +2424,8 @@ declare module '@strapi/strapi' {
       'api::trabajadore.trabajadore': ApiTrabajadoreTrabajadore;
       'api::trabajosrealizado.trabajosrealizado': ApiTrabajosrealizadoTrabajosrealizado;
       'api::transaction.transaction': ApiTransactionTransaction;
+      'api::transferencia-material.transferencia-material': ApiTransferenciaMaterialTransferenciaMaterial;
+      'api::ubicacion-deposito.ubicacion-deposito': ApiUbicacionDepositoUbicacionDeposito;
       'api::unidad-medida.unidad-medida': ApiUnidadMedidaUnidadMedida;
       'api::valuacion.valuacion': ApiValuacionValuacion;
       'plugin::content-releases.release': PluginContentReleasesRelease;

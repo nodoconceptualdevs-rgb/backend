@@ -1,8 +1,13 @@
+const { requierePermisoObra } = require('../../../utils/permisos-obra');
+const { registrarHistorial } = require('../../../utils/historial');
+
 module.exports = {
   async getReportes(ctx) {
     const { obraId } = ctx.params;
 
     if (!obraId) return ctx.badRequest('obraId is required');
+
+    if (!(await requierePermisoObra(ctx, obraId, 'reportes', 'read'))) return;
 
     try {
       const reportes = await strapi.entityService.findMany('api::reporte.reporte', {
@@ -61,6 +66,9 @@ module.exports = {
     if (!obraId || !partidaId || !fecha || montoAplicado === undefined) {
       return ctx.badRequest('obraId, partidaId, fecha and montoAplicado are required');
     }
+
+    const usuarioActor = await requierePermisoObra(ctx, obraId, 'reportes', 'create');
+    if (!usuarioActor) return;
 
     if (montoAplicado <= 0) {
       return ctx.badRequest('montoAplicado debe ser mayor a 0');
@@ -164,6 +172,15 @@ module.exports = {
       }
 
       console.log(`[REPORTE] Created: ${reporte.id} for obra ${obraId}, partida ${partidaId}`);
+
+      await registrarHistorial({
+        obra,
+        usuario: usuarioActor,
+        modulo: 'reportes',
+        accion: 'CREAR',
+        descripcion: `Registró un reporte diario en la partida ${partida.codigo} por $${montoAplicado}`,
+      });
+
       return ctx.send({ data: { ...reporte, partidaId: parseInt(partidaId) } }, 201);
     } catch (error) {
       console.error('[ERROR] createReporte:', error);
@@ -175,6 +192,12 @@ module.exports = {
     const { obraId, reporteId } = ctx.params;
 
     if (!obraId || !reporteId) return ctx.badRequest('obraId and reporteId are required');
+
+    // No existe una bandera "delete" propia para reportes en el modelo de
+    // permisos (solo read/create) — se gatea bajo "create", la única
+    // bandera de escritura disponible para este módulo.
+    const usuarioActor = await requierePermisoObra(ctx, obraId, 'reportes', 'create');
+    if (!usuarioActor) return;
 
     try {
       const reporte = await strapi.entityService.findOne('api::reporte.reporte', parseInt(reporteId), {
@@ -188,6 +211,15 @@ module.exports = {
       await strapi.entityService.delete('api::reporte.reporte', parseInt(reporteId));
 
       console.log(`[REPORTE] Deleted: ${reporteId}`);
+
+      await registrarHistorial({
+        obra: { id: parseInt(obraId), nombre: reporte.obra?.nombre },
+        usuario: usuarioActor,
+        modulo: 'reportes',
+        accion: 'ELIMINAR',
+        descripcion: `Eliminó un reporte diario del ${reporte.fecha}`,
+      });
+
       return ctx.send({ data: { id: parseInt(reporteId) } });
     } catch (error) {
       console.error('[ERROR] deleteReporte:', error);
