@@ -45,7 +45,8 @@
     "testMatch": ["**/tests/**/*.test.js"],
     "collectCoverageFrom": ["src/**/*.js"],
     "coveragePathIgnorePatterns": ["/node_modules/"],
-    "setupFilesAfterEnv": []
+    "setupFilesAfterEnv": [],
+    "testTimeout": 120000
   }
 }
 

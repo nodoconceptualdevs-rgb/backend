@@ -30,6 +30,29 @@ const UNIDADES_SEED = [
   { nombre: 'kg', abreviatura: 'kg' },
 ];
 
+async function otorgarPermisosCatalogo(strapi, uid, rolTipo = 'admin', acciones = ['find', 'findOne', 'create', 'update', 'delete']) {
+  // Los content-types nuevos nacen sin permisos habilitados en ningún rol.
+  // Se replican los mismos permisos que ya tienen categoria-herramienta /
+  // unidad-medida para no depender de tocar el panel de Roles a mano
+  // (mismo patrón que permisos-obra.js explica en su comentario).
+  const rol = await strapi.query('plugin::users-permissions.role').findOne({
+    where: { type: rolTipo },
+  });
+  if (!rol) return;
+
+  for (const accion of acciones) {
+    const action = `${uid}.${accion}`;
+    const existe = await strapi.query('plugin::users-permissions.permission').findOne({
+      where: { action, role: rol.id },
+    });
+    if (!existe) {
+      await strapi.query('plugin::users-permissions.permission').create({
+        data: { action, role: rol.id },
+      });
+    }
+  }
+}
+
 async function seedCategoriasYUnidades(strapi) {
   // Solo sembrar si la tabla está vacía (primera instalación)
   const categorias = await strapi.entityService.findMany('api::categoria-material.categoria-material', {});
@@ -72,5 +95,14 @@ module.exports = {
    */
   async bootstrap({ strapi }) {
     await seedCategoriasYUnidades(strapi);
+    await otorgarPermisosCatalogo(strapi, 'api::ubicacion-deposito.ubicacion-deposito');
+
+    // Strapi exige permiso de "find" sobre el content-type destino de una
+    // relación para poder escribirla vía la API pública (ver
+    // throw-restricted-relations en @strapi/utils). "Personal" nunca tuvo
+    // permisos porque siempre se accedió por rutas custom con auth:false —
+    // ahora que "obra.capataz" apunta a Personal, hace falta este mínimo.
+    await otorgarPermisosCatalogo(strapi, 'api::personal.personal', 'admin', ['find']);
+    await otorgarPermisosCatalogo(strapi, 'api::personal.personal', 'gerente_de_proyecto', ['find']);
   },
 };

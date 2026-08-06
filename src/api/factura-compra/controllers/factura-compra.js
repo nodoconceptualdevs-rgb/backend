@@ -1,6 +1,8 @@
 'use strict';
 
 const { createCoreController } = require('@strapi/strapi').factories;
+const { requierePermisoObra, requiereAdmin, obtenerUsuarioDesdeToken } = require('../../../utils/permisos-obra');
+const { registrarHistorial, calcularCambios } = require('../../../utils/historial');
 
 // Cuando una factura se aprueba, incrementa el stock de cada material
 async function actualizarStockDesdeItems(strapi, items) {
@@ -110,6 +112,7 @@ module.exports = createCoreController('api::factura-compra.factura-compra', ({ s
   async getFacturasByObra(ctx) {
     const { obraId } = ctx.params;
     if (!obraId) return ctx.badRequest('obraId is required');
+    if (!(await requierePermisoObra(ctx, obraId, 'inventario', 'read'))) return;
     try {
       const facturas = await strapi.entityService.findMany('api::factura-compra.factura-compra', {
         filters: { obra: { id: parseInt(obraId) } },
@@ -127,6 +130,8 @@ module.exports = createCoreController('api::factura-compra.factura-compra', ({ s
   async createFacturaForObra(ctx) {
     const { obraId } = ctx.params;
     if (!obraId) return ctx.badRequest('obraId is required');
+    const usuarioActor = await requierePermisoObra(ctx, obraId, 'inventario', 'create');
+    if (!usuarioActor) return;
     try {
       const obra = await strapi.entityService.findOne('api::obra.obra', parseInt(obraId));
       if (!obra) return ctx.notFound('Obra not found');
@@ -162,6 +167,15 @@ module.exports = createCoreController('api::factura-compra.factura-compra', ({ s
       }
 
       console.log(`[FACTURA] Created: ${factura.id} for obra ${obraId}`);
+
+      await registrarHistorial({
+        obra,
+        usuario: usuarioActor,
+        modulo: 'inventario',
+        accion: 'CREAR',
+        descripcion: `Creó la factura ${factura.numero}`,
+      });
+
       return ctx.send({ data: factura }, 201);
     } catch (error) {
       console.error('[ERROR] createFacturaForObra:', error);
@@ -170,14 +184,17 @@ module.exports = createCoreController('api::factura-compra.factura-compra', ({ s
   },
 
   async find(ctx) {
+    if (!(await requiereAdmin(ctx))) return;
     return super.find(ctx);
   },
 
   async findOne(ctx) {
+    if (!(await requiereAdmin(ctx))) return;
     return super.findOne(ctx);
   },
 
   async create(ctx) {
+    if (!(await requiereAdmin(ctx))) return;
     try {
       const data = ctx.request.body.data;
 
@@ -250,9 +267,12 @@ module.exports = createCoreController('api::factura-compra.factura-compra', ({ s
   async update(ctx) {
     const { id } = ctx.params;
     const existente = await strapi.entityService.findOne(
-      'api::factura-compra.factura-compra', id, { populate: { items: true } }
+      'api::factura-compra.factura-compra', id, { populate: { items: true, obra: true } }
     );
     if (!existente) return ctx.notFound('Factura no encontrada');
+
+    const usuarioActor = await requierePermisoObra(ctx, existente.obra?.id, 'inventario', 'update');
+    if (!usuarioActor) return;
 
     try {
       const actualizada = await strapi.entityService.update(
@@ -266,6 +286,21 @@ module.exports = createCoreController('api::factura-compra.factura-compra', ({ s
         await actualizarStockDesdeItems(strapi, actualizada.items);
       }
 
+      const { cambios, resumen } = calcularCambios(existente, actualizada, [
+        { key: 'estado', label: 'Estado' },
+        { key: 'numero', label: 'Número' },
+      ]);
+      if (resumen) {
+        await registrarHistorial({
+          obra: existente.obra,
+          usuario: usuarioActor,
+          modulo: 'inventario',
+          accion: 'EDITAR',
+          descripcion: `Editó la factura ${actualizada.numero}: ${resumen}`,
+          cambios,
+        });
+      }
+
       return ctx.send({ data: actualizada });
     } catch (error) {
       console.error('[ERROR] actualizar-factura:', error);
@@ -273,12 +308,41 @@ module.exports = createCoreController('api::factura-compra.factura-compra', ({ s
     }
   },
 
+  async delete(ctx) {
+    const { id } = ctx.params;
+    const factura = await strapi.entityService.findOne('api::factura-compra.factura-compra', id, {
+      populate: { items: true, obra: true }
+    });
+    if (!factura) return ctx.notFound('Factura no encontrada');
+    const usuarioActor = await requiereAdmin(ctx);
+    if (!usuarioActor) return;
+
+    // Revertir stock si la factura estaba aprobada, para no dejar unidades huérfanas
+    if (factura.estado === 'APROBADA' && factura.items?.length > 0) {
+      await revertirStockDesdeItems(strapi, factura.items);
+    }
+
+    const deleted = await strapi.entityService.delete('api::factura-compra.factura-compra', id);
+
+    await registrarHistorial({
+      obra: factura.obra,
+      usuario: usuarioActor,
+      modulo: 'inventario',
+      accion: 'ELIMINAR',
+      descripcion: `Eliminó la factura ${factura.numero}`,
+    });
+
+    return ctx.send({ data: deleted });
+  },
+
   async anular(ctx) {
     const { id } = ctx.params;
     const factura = await strapi.entityService.findOne('api::factura-compra.factura-compra', id, {
-      populate: { items: true }
+      populate: { items: true, obra: true }
     });
     if (!factura) return ctx.notFound('Factura no encontrada');
+    const usuarioActor = await requierePermisoObra(ctx, factura.obra?.id, 'inventario', 'update');
+    if (!usuarioActor) return;
     if (factura.estado === 'ANULADA') return ctx.badRequest('La factura ya está anulada');
 
     // Si la factura estaba aprobada, revertir stock antes de anularla
@@ -290,16 +354,36 @@ module.exports = createCoreController('api::factura-compra.factura-compra', ({ s
       data: { estado: 'ANULADA' },
     });
 
+    await registrarHistorial({
+      obra: factura.obra,
+      usuario: usuarioActor,
+      modulo: 'inventario',
+      accion: 'ELIMINAR',
+      descripcion: `Anuló la factura ${factura.numero}`,
+    });
+
     return ctx.send({ data: updated });
   },
 
   async inhabilitar(ctx) {
     const { id } = ctx.params;
-    const factura = await strapi.entityService.findOne('api::factura-compra.factura-compra', id);
+    const factura = await strapi.entityService.findOne('api::factura-compra.factura-compra', id, {
+      populate: { obra: true },
+    });
     if (!factura) return ctx.notFound('Factura no encontrada');
+    const usuarioActor = await requierePermisoObra(ctx, factura.obra?.id, 'inventario', 'update');
+    if (!usuarioActor) return;
 
     const updated = await strapi.entityService.update('api::factura-compra.factura-compra', id, {
       data: { inhabilitada: true },
+    });
+
+    await registrarHistorial({
+      obra: factura.obra,
+      usuario: usuarioActor,
+      modulo: 'inventario',
+      accion: 'EDITAR',
+      descripcion: `Inhabilitó la factura ${factura.numero}`,
     });
 
     return ctx.send({ data: updated });
@@ -314,9 +398,11 @@ module.exports = createCoreController('api::factura-compra.factura-compra', ({ s
     }
 
     const factura = await strapi.entityService.findOne(
-      'api::factura-compra.factura-compra', id, { populate: { items: true } }
+      'api::factura-compra.factura-compra', id, { populate: { items: true, obra: true } }
     );
     if (!factura) return ctx.notFound('Factura no encontrada');
+    const usuarioActor = await requierePermisoObra(ctx, factura.obra?.id, 'inventario', 'update');
+    if (!usuarioActor) return;
 
     const updated = await strapi.entityService.update('api::factura-compra.factura-compra', id, {
       data: { estado },
@@ -328,10 +414,22 @@ module.exports = createCoreController('api::factura-compra.factura-compra', ({ s
       await actualizarStockDesdeItems(strapi, updated.items);
     }
 
+    await registrarHistorial({
+      obra: factura.obra,
+      usuario: usuarioActor,
+      modulo: 'inventario',
+      accion: 'CAMBIO_ESTADO',
+      descripcion: `Cambió el estado de la factura ${factura.numero}: ${factura.estado} → ${estado}`,
+      cambios: { estado: { anterior: factura.estado, nuevo: estado } },
+    });
+
     return ctx.send({ data: updated });
   },
 
   async proximoNumero(ctx) {
+    const user = await obtenerUsuarioDesdeToken(ctx);
+    if (!user) return ctx.unauthorized('Debes estar autenticado');
+
     try {
       const ahora = new Date();
       const year = ahora.getFullYear();

@@ -8,5 +8,11 @@ module.exports = {
       handler: 'material-catalogo.decrementar',
       config: { policies: [], middlewares: [] },
     },
+    {
+      method: 'PATCH',
+      path: '/material-catalogos/:id/generar-codigo',
+      handler: 'material-catalogo.generarCodigo',
+      config: { auth: false, policies: [], middlewares: [] },
+    },
   ],
 };

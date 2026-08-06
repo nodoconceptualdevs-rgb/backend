@@ -1,0 +1,58 @@
+{
+  "kind": "collectionType",
+  "collectionName": "transferencia_materiales",
+  "info": {
+    "singularName": "transferencia-material",
+    "pluralName": "transferencia-materiales",
+    "displayName": "Transferencia de Material",
+    "description": "Movimientos de stock de materiales entre obras o hacia/desde el inventario general de Nodo"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "material": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::material-catalogo.material-catalogo"
+    },
+    "materialNombre": {
+      "type": "string"
+    },
+    "unidad": {
+      "type": "string"
+    },
+    "cantidad": {
+      "type": "decimal",
+      "required": true
+    },
+    "obraOrigen": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::obra.obra"
+    },
+    "obraOrigenNombre": {
+      "type": "string"
+    },
+    "obraDestino": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::obra.obra"
+    },
+    "obraDestinoNombre": {
+      "type": "string"
+    },
+    "usuario": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "usuarioNombre": {
+      "type": "string"
+    },
+    "nota": {
+      "type": "text"
+    }
+  }
+}

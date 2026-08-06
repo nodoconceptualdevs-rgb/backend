@@ -1,0 +1,79 @@
+{
+  "kind": "collectionType",
+  "collectionName": "obra_gerente_permisos",
+  "info": {
+    "singularName": "obra-gerente-permiso",
+    "pluralName": "obra-gerente-permisos",
+    "displayName": "Permiso Gerente Obra",
+    "description": "Define los permisos de cada gerente en una obra específica"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "obra": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::obra.obra"
+    },
+    "gerente": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "partidas": {
+      "type": "json",
+      "default": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      }
+    },
+    "reportes": {
+      "type": "json",
+      "default": {
+        "read": false,
+        "create": false
+      }
+    },
+    "personal": {
+      "type": "json",
+      "default": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      }
+    },
+    "valuaciones": {
+      "type": "json",
+      "default": {
+        "read": false,
+        "create": false
+      }
+    },
+    "analitica": {
+      "type": "json",
+      "default": {
+        "read": false
+      }
+    },
+    "inventario": {
+      "type": "json",
+      "default": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      }
+    },
+    "historial": {
+      "type": "json",
+      "default": {
+        "read": false
+      }
+    }
+  }
+}

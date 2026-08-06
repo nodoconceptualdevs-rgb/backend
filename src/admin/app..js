@@ -2,6 +2,10 @@ const config = {
   locales: [
      'es',
   ],
+  tutorials: false,
+  notifications: {
+    releases: false,
+  },
 };
 
 const bootstrap = (app) => {

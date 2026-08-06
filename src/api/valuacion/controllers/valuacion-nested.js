@@ -1,8 +1,13 @@
 'use strict';
 
+const { requierePermisoObra } = require('../../../utils/permisos-obra');
+const { registrarHistorial } = require('../../../utils/historial');
+
 module.exports = {
   async getValuaciones(ctx) {
     const { obraId } = ctx.params;
+
+    if (!(await requierePermisoObra(ctx, obraId, 'valuaciones', 'read'))) return;
 
     try {
       const valuaciones = await strapi.entityService.findMany('api::valuacion.valuacion', {
@@ -20,6 +25,9 @@ module.exports = {
   async createValuacion(ctx) {
     const { obraId } = ctx.params;
     const body = ctx.request.body?.data || ctx.request.body || {};
+
+    const usuarioActor = await requierePermisoObra(ctx, obraId, 'valuaciones', 'create');
+    if (!usuarioActor) return;
 
     try {
       const obra = await strapi.entityService.findOne('api::obra.obra', parseInt(obraId));
@@ -68,6 +76,15 @@ module.exports = {
       );
 
       console.log(`[VALUACION] Creada V${numero} para obra ${obraId}, ${reportesPendientes.length} reportes marcados`);
+
+      await registrarHistorial({
+        obra,
+        usuario: usuarioActor,
+        modulo: 'valuaciones',
+        accion: 'CREAR',
+        descripcion: `Concretó la valuación V${numero} (${reportesPendientes.length} reportes)`,
+      });
+
       return ctx.send({ data: nuevaValuacion });
     } catch (error) {
       console.error('[ERROR] createValuacion:', error);

@@ -1,4 +1,6 @@
 const { createCoreController } = require('@strapi/strapi').factories;
+const { requierePermisoObra } = require('../../../utils/permisos-obra');
+const { registrarHistorial, calcularCambios } = require('../../../utils/historial');
 
 module.exports = {
   async getPartidas(ctx) {
@@ -7,6 +9,8 @@ module.exports = {
     if (!obraId) {
       return ctx.badRequest('obraId is required');
     }
+
+    if (!(await requierePermisoObra(ctx, obraId, 'partidas', 'read'))) return;
 
     try {
       const partidas = await strapi.entityService.findMany('api::partida.partida', {
@@ -32,6 +36,8 @@ module.exports = {
       return ctx.badRequest('obraId and partidaId are required');
     }
 
+    if (!(await requierePermisoObra(ctx, obraId, 'partidas', 'read'))) return;
+
     try {
       const partida = await strapi.entityService.findOne('api::partida.partida', parseInt(partidaId), {
         populate: ['obra']
@@ -55,6 +61,9 @@ module.exports = {
     if (!obraId) {
       return ctx.badRequest('obraId is required');
     }
+
+    const usuarioActor = await requierePermisoObra(ctx, obraId, 'partidas', 'create');
+    if (!usuarioActor) return;
 
     // Validations
     if (!codigo || !descripcion || !unidad || cantidadPresupuestada === undefined || precioUnitario === undefined) {
@@ -92,6 +101,14 @@ module.exports = {
 
       console.log(`[PARTIDA] Created: ${partida.id} for obra ${obraId}`);
 
+      await registrarHistorial({
+        obra,
+        usuario: usuarioActor,
+        modulo: 'partidas',
+        accion: 'CREAR',
+        descripcion: `Creó la partida ${partida.codigo} — ${partida.descripcion}`,
+      });
+
       return ctx.send({ data: partida }, 201);
     } catch (error) {
       console.error('[ERROR] createPartida:', error);
@@ -106,6 +123,9 @@ module.exports = {
     if (!obraId || !partidaId) {
       return ctx.badRequest('obraId and partidaId are required');
     }
+
+    const usuarioActor = await requierePermisoObra(ctx, obraId, 'partidas', 'update');
+    if (!usuarioActor) return;
 
     try {
       // Verify partida belongs to obra
@@ -142,6 +162,24 @@ module.exports = {
 
       console.log(`[PARTIDA] Updated: ${partidaId}`);
 
+      const { cambios, resumen } = calcularCambios(partida, updatedPartida, [
+        { key: 'codigo', label: 'Código' },
+        { key: 'descripcion', label: 'Descripción' },
+        { key: 'unidad', label: 'Unidad' },
+        { key: 'cantidadPresupuestada', label: 'Cantidad presupuestada' },
+        { key: 'precioUnitario', label: 'Precio unitario', formatear: (v) => `$${v ?? 0}` },
+      ]);
+      if (resumen) {
+        await registrarHistorial({
+          obra: { id: parseInt(obraId), nombre: partida.obra?.nombre },
+          usuario: usuarioActor,
+          modulo: 'partidas',
+          accion: 'EDITAR',
+          descripcion: `Editó la partida ${updatedPartida.codigo}: ${resumen}`,
+          cambios,
+        });
+      }
+
       return ctx.send({ data: updatedPartida });
     } catch (error) {
       console.error('[ERROR] updatePartida:', error);
@@ -156,6 +194,9 @@ module.exports = {
       return ctx.badRequest('obraId and partidaId are required');
     }
 
+    const usuarioActor = await requierePermisoObra(ctx, obraId, 'partidas', 'delete');
+    if (!usuarioActor) return;
+
     try {
       // Verify partida belongs to obra
       const partida = await strapi.entityService.findOne('api::partida.partida', parseInt(partidaId), {
@@ -168,6 +209,14 @@ module.exports = {
       await strapi.entityService.delete('api::partida.partida', parseInt(partidaId));
 
       console.log(`[PARTIDA] Deleted: ${partidaId}`);
+
+      await registrarHistorial({
+        obra: { id: parseInt(obraId), nombre: partida.obra?.nombre },
+        usuario: usuarioActor,
+        modulo: 'partidas',
+        accion: 'ELIMINAR',
+        descripcion: `Eliminó la partida ${partida.codigo} — ${partida.descripcion}`,
+      });
 
       return ctx.send({ data: { id: parseInt(partidaId), message: 'Partida deleted successfully' } });
     } catch (error) {
