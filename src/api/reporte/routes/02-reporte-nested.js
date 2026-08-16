@@ -13,6 +13,12 @@ module.exports = {
       config: { auth: false },
     },
     {
+      method: 'PUT',
+      path: '/obras/:obraId/reportes/:reporteId',
+      handler: 'reporte-nested.updateReporte',
+      config: { auth: false },
+    },
+    {
       method: 'DELETE',
       path: '/obras/:obraId/reportes/:reporteId',
       handler: 'reporte-nested.deleteReporte',

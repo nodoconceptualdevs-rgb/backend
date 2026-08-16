@@ -131,4 +131,33 @@ module.exports = createCoreController('api::material-catalogo.material-catalogo'
 
     return ctx.send({ data: updated });
   },
+
+  async incrementar(ctx) {
+    const user = ctx.state.user;
+    if (!user) return ctx.unauthorized('Debes estar autenticado');
+    if (user.role?.type !== 'admin' && user.role?.type !== 'gerente_de_proyecto') {
+      return ctx.forbidden('Sin permisos para modificar stock');
+    }
+
+    const { id } = ctx.params;
+    const { cantidad } = ctx.request.body;
+
+    if (!cantidad || cantidad <= 0) {
+      return ctx.badRequest('La cantidad debe ser un número positivo');
+    }
+
+    const material = await strapi.entityService.findOne(
+      'api::material-catalogo.material-catalogo', id
+    );
+    if (!material) return ctx.notFound('Material no encontrado');
+
+    const nuevoStock = (material.stockActual || 0) + cantidad;
+
+    const updated = await strapi.entityService.update(
+      'api::material-catalogo.material-catalogo', id,
+      { data: { stockActual: nuevoStock } }
+    );
+
+    return ctx.send({ data: updated });
+  },
 }));

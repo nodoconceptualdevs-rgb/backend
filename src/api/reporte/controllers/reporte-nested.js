@@ -1,6 +1,46 @@
 const { requierePermisoObra } = require('../../../utils/permisos-obra');
 const { registrarHistorial } = require('../../../utils/historial');
 
+// Ajusta el progreso de una partida (cantidadEjecutada/montoEjecutado/avancePorcentaje)
+// aplicando un delta en $ — positivo al registrar/aumentar un reporte, negativo al
+// eliminarlo o revertir su monto anterior antes de aplicar uno nuevo (edición).
+async function ajustarPartidaPorMonto(partidaId, deltaMonto) {
+  if (!partidaId || !deltaMonto) return null;
+  const partida = await strapi.entityService.findOne('api::partida.partida', partidaId);
+  if (!partida) return null;
+
+  const precioUnit = partida.precioUnitario || 0;
+  const deltaCantidad = precioUnit > 0 ? deltaMonto / precioUnit : 0;
+  const cantidadPresupuestada = partida.cantidadPresupuestada || 0;
+  const nuevaCantidad = Math.min(
+    Math.max((partida.cantidadEjecutada || 0) + deltaCantidad, 0),
+    cantidadPresupuestada
+  );
+  const nuevoMonto = nuevaCantidad * precioUnit;
+  const nuevoAvance = cantidadPresupuestada > 0
+    ? Math.min((nuevaCantidad / cantidadPresupuestada) * 100, 100)
+    : 0;
+
+  return strapi.entityService.update('api::partida.partida', partidaId, {
+    data: {
+      cantidadEjecutada: nuevaCantidad,
+      montoEjecutado: nuevoMonto,
+      avancePorcentaje: nuevoAvance,
+    },
+  });
+}
+
+// Ajusta obra.presupuesto_consumido aplicando un delta (positivo o negativo).
+async function ajustarPresupuestoConsumido(obraId, deltaCosto) {
+  if (!obraId || !deltaCosto) return;
+  const obra = await strapi.entityService.findOne('api::obra.obra', obraId);
+  if (!obra) return;
+  const nuevo = Math.max((obra.presupuesto_consumido || 0) + deltaCosto, 0);
+  await strapi.entityService.update('api::obra.obra', obraId, {
+    data: { presupuesto_consumido: nuevo },
+  });
+}
+
 module.exports = {
   async getReportes(ctx) {
     const { obraId } = ctx.params;
@@ -141,35 +181,10 @@ module.exports = {
       }
 
       // Update partida: use montoAplicado to derive quantity increment
-      const precioUnit = partida.precioUnitario || 0;
-      const incremento = precioUnit > 0 ? montoAplicado / precioUnit : 0;
-      if (incremento > 0) {
-        const nuevaCantidad = Math.min(
-          (partida.cantidadEjecutada || 0) + incremento,
-          partida.cantidadPresupuestada || 0
-        );
-        const nuevoMonto = nuevaCantidad * precioUnit;
-        const nuevoAvance = (partida.cantidadPresupuestada || 0) > 0
-          ? (nuevaCantidad / partida.cantidadPresupuestada) * 100
-          : 0;
-
-        await strapi.entityService.update('api::partida.partida', parseInt(partidaId), {
-          data: {
-            cantidadEjecutada: nuevaCantidad,
-            montoEjecutado: nuevoMonto,
-            avancePorcentaje: Math.min(nuevoAvance, 100),
-          },
-        });
-      }
+      await ajustarPartidaPorMonto(parseInt(partidaId), montoAplicado);
 
       // Update obra: increment presupuesto_consumido
-      if (costoTotal > 0) {
-        await strapi.entityService.update('api::obra.obra', parseInt(obraId), {
-          data: {
-            presupuesto_consumido: (obra.presupuesto_consumido || 0) + costoTotal,
-          },
-        });
-      }
+      await ajustarPresupuestoConsumido(parseInt(obraId), costoTotal || 0);
 
       console.log(`[REPORTE] Created: ${reporte.id} for obra ${obraId}, partida ${partidaId}`);
 
@@ -188,6 +203,139 @@ module.exports = {
     }
   },
 
+  async updateReporte(ctx) {
+    const { obraId, reporteId } = ctx.params;
+    let data = ctx.request.body.data;
+
+    if (typeof data === 'string') {
+      try {
+        data = JSON.parse(data);
+      } catch (e) {
+        return ctx.badRequest('Invalid JSON in data field');
+      }
+    }
+
+    const {
+      partidaId,
+      fecha,
+      montoAplicado,
+      observaciones,
+      personal,
+      materiales,
+      costoManoObra,
+      costoMateriales,
+      costoTotal,
+      existingImageIds,
+    } = data || {};
+
+    if (!obraId || !reporteId) return ctx.badRequest('obraId and reporteId are required');
+    if (!partidaId || !fecha || montoAplicado === undefined) {
+      return ctx.badRequest('partidaId, fecha and montoAplicado are required');
+    }
+    if (montoAplicado <= 0) {
+      return ctx.badRequest('montoAplicado debe ser mayor a 0');
+    }
+
+    const usuarioActor = await requierePermisoObra(ctx, obraId, 'reportes', 'create');
+    if (!usuarioActor) return;
+
+    try {
+      const reporte = await strapi.entityService.findOne('api::reporte.reporte', parseInt(reporteId), {
+        populate: ['obra', 'partida'],
+      });
+
+      if (!reporte || reporte.obra?.id !== parseInt(obraId)) {
+        return ctx.notFound('Reporte not found or does not belong to this obra');
+      }
+
+      if (reporte.valuacionId) {
+        return ctx.badRequest('No se puede editar un reporte que ya fue incluido en una valuación');
+      }
+
+      const [partidaDestinoPrevia] = await strapi.entityService.findMany('api::partida.partida', {
+        filters: { id: parseInt(partidaId), obra: { id: parseInt(obraId) } },
+      });
+      if (!partidaDestinoPrevia) {
+        return ctx.badRequest('Partida no encontrada o no pertenece a esta obra');
+      }
+
+      // Revertir el efecto del monto anterior sobre su partida original
+      if (reporte.partida?.id) {
+        await ajustarPartidaPorMonto(reporte.partida.id, -(reporte.montoAplicado || 0));
+      }
+
+      // Verificar que la partida destino (ya sin el aporte anterior) admita el nuevo monto
+      const partidaDestino = await strapi.entityService.findOne('api::partida.partida', parseInt(partidaId));
+      if ((partidaDestino.avancePorcentaje || 0) >= 100) {
+        if (reporte.partida?.id) await ajustarPartidaPorMonto(reporte.partida.id, reporte.montoAplicado || 0);
+        return ctx.badRequest('Esta partida ya está ejecutada al 100%. Crea una partida extra para trabajo adicional.');
+      }
+
+      const montoPresupuestado = (partidaDestino.cantidadPresupuestada || 0) * (partidaDestino.precioUnitario || 0);
+      const avanceLogrado = montoPresupuestado > 0 ? (montoAplicado / montoPresupuestado) * 100 : 0;
+
+      const reporteActualizado = await strapi.entityService.update('api::reporte.reporte', parseInt(reporteId), {
+        data: {
+          fecha,
+          avanceLogrado,
+          montoAplicado,
+          observaciones: observaciones || '',
+          personal: personal || [],
+          materiales: materiales || [],
+          costoManoObra: costoManoObra || 0,
+          costoMateriales: costoMateriales || 0,
+          costoTotal: costoTotal || 0,
+          partidaCodigo: partidaDestino.codigo,
+          partidaDescripcion: partidaDestino.descripcion,
+          partida: parseInt(partidaId),
+          // Reemplaza la lista completa de imágenes por la que envía el cliente
+          // (ya refleja las que se quitaron); las nuevas subidas se agregan abajo.
+          imagenes: Array.isArray(existingImageIds) ? existingImageIds.map((id) => parseInt(id)) : [],
+        },
+      });
+
+      // Manejar imágenes nuevas subidas como multipart
+      const files = ctx.request.files?.imagenes;
+      if (files && (Array.isArray(files) ? files.length > 0 : files)) {
+        try {
+          const imagenesToUpload = Array.isArray(files) ? files : [files];
+          for (const file of imagenesToUpload) {
+            await strapi.plugins.upload.services.upload.upload({
+              files: file,
+              ref: 'api::reporte.reporte',
+              refId: reporteActualizado.id,
+              field: 'imagenes',
+            });
+          }
+        } catch (uploadError) {
+          console.error('[ERROR] Upload imagenes:', uploadError);
+        }
+      }
+
+      // Aplicar el nuevo monto a la partida destino
+      await ajustarPartidaPorMonto(parseInt(partidaId), montoAplicado);
+
+      // Revertir el consumo de presupuesto anterior y aplicar el nuevo
+      await ajustarPresupuestoConsumido(parseInt(obraId), -(reporte.costoTotal || 0));
+      await ajustarPresupuestoConsumido(parseInt(obraId), costoTotal || 0);
+
+      console.log(`[REPORTE] Updated: ${reporteId} for obra ${obraId}, partida ${partidaId}`);
+
+      await registrarHistorial({
+        obra: { id: parseInt(obraId), nombre: reporte.obra?.nombre },
+        usuario: usuarioActor,
+        modulo: 'reportes',
+        accion: 'ACTUALIZAR',
+        descripcion: `Editó un reporte diario del ${fecha}`,
+      });
+
+      return ctx.send({ data: { ...reporteActualizado, partidaId: parseInt(partidaId) } });
+    } catch (error) {
+      console.error('[ERROR] updateReporte:', error);
+      ctx.throw(500, 'Error updating reporte');
+    }
+  },
+
   async deleteReporte(ctx) {
     const { obraId, reporteId } = ctx.params;
 
@@ -201,12 +349,21 @@ module.exports = {
 
     try {
       const reporte = await strapi.entityService.findOne('api::reporte.reporte', parseInt(reporteId), {
-        populate: ['obra'],
+        populate: ['obra', 'partida'],
       });
 
       if (!reporte || reporte.obra?.id !== parseInt(obraId)) {
         return ctx.notFound('Reporte not found or does not belong to this obra');
       }
+
+      if (reporte.valuacionId) {
+        return ctx.badRequest('No se puede eliminar un reporte que ya fue incluido en una valuación');
+      }
+
+      if (reporte.partida?.id) {
+        await ajustarPartidaPorMonto(reporte.partida.id, -(reporte.montoAplicado || 0));
+      }
+      await ajustarPresupuestoConsumido(parseInt(obraId), -(reporte.costoTotal || 0));
 
       await strapi.entityService.delete('api::reporte.reporte', parseInt(reporteId));
 

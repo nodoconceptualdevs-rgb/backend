@@ -9,6 +9,12 @@ module.exports = {
       config: { policies: [], middlewares: [] },
     },
     {
+      method: 'POST',
+      path: '/material-catalogos/:id/incrementar',
+      handler: 'material-catalogo.incrementar',
+      config: { policies: [], middlewares: [] },
+    },
+    {
       method: 'PATCH',
       path: '/material-catalogos/:id/generar-codigo',
       handler: 'material-catalogo.generarCodigo',
