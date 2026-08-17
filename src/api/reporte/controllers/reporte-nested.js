@@ -1,45 +1,6 @@
 const { requierePermisoObra } = require('../../../utils/permisos-obra');
 const { registrarHistorial } = require('../../../utils/historial');
-
-// Ajusta el progreso de una partida (cantidadEjecutada/montoEjecutado/avancePorcentaje)
-// aplicando un delta en $ — positivo al registrar/aumentar un reporte, negativo al
-// eliminarlo o revertir su monto anterior antes de aplicar uno nuevo (edición).
-async function ajustarPartidaPorMonto(partidaId, deltaMonto) {
-  if (!partidaId || !deltaMonto) return null;
-  const partida = await strapi.entityService.findOne('api::partida.partida', partidaId);
-  if (!partida) return null;
-
-  const precioUnit = partida.precioUnitario || 0;
-  const deltaCantidad = precioUnit > 0 ? deltaMonto / precioUnit : 0;
-  const cantidadPresupuestada = partida.cantidadPresupuestada || 0;
-  const nuevaCantidad = Math.min(
-    Math.max((partida.cantidadEjecutada || 0) + deltaCantidad, 0),
-    cantidadPresupuestada
-  );
-  const nuevoMonto = nuevaCantidad * precioUnit;
-  const nuevoAvance = cantidadPresupuestada > 0
-    ? Math.min((nuevaCantidad / cantidadPresupuestada) * 100, 100)
-    : 0;
-
-  return strapi.entityService.update('api::partida.partida', partidaId, {
-    data: {
-      cantidadEjecutada: nuevaCantidad,
-      montoEjecutado: nuevoMonto,
-      avancePorcentaje: nuevoAvance,
-    },
-  });
-}
-
-// Ajusta obra.presupuesto_consumido aplicando un delta (positivo o negativo).
-async function ajustarPresupuestoConsumido(obraId, deltaCosto) {
-  if (!obraId || !deltaCosto) return;
-  const obra = await strapi.entityService.findOne('api::obra.obra', obraId);
-  if (!obra) return;
-  const nuevo = Math.max((obra.presupuesto_consumido || 0) + deltaCosto, 0);
-  await strapi.entityService.update('api::obra.obra', obraId, {
-    data: { presupuesto_consumido: nuevo },
-  });
-}
+const { ajustarPartidaPorMonto, ajustarPresupuestoConsumido, revertirEfectosReporte } = require('../../../utils/reporte-efectos');
 
 module.exports = {
   async getReportes(ctx) {
@@ -101,6 +62,7 @@ module.exports = {
       costoMateriales,
       costoTotal,
       existingImageIds,
+      loteId,
     } = data;
 
     if (!obraId || !partidaId || !fecha || montoAplicado === undefined) {
@@ -145,6 +107,7 @@ module.exports = {
           obraNombre: obra.nombre,
           partidaCodigo: partida.codigo,
           partidaDescripcion: partida.descripcion,
+          loteId: loteId || null,
           obra: parseInt(obraId),
           partida: parseInt(partidaId),
         },
@@ -356,10 +319,6 @@ module.exports = {
         return ctx.notFound('Reporte not found or does not belong to this obra');
       }
 
-      if (reporte.valuacionId) {
-        return ctx.badRequest('No se puede eliminar un reporte que ya fue incluido en una valuación');
-      }
-
       if (reporte.partida?.id) {
         await ajustarPartidaPorMonto(reporte.partida.id, -(reporte.montoAplicado || 0));
       }
@@ -374,13 +333,66 @@ module.exports = {
         usuario: usuarioActor,
         modulo: 'reportes',
         accion: 'ELIMINAR',
-        descripcion: `Eliminó un reporte diario del ${reporte.fecha}`,
+        descripcion: reporte.valuacionId
+          ? `Eliminó un reporte diario del ${reporte.fecha} (ya estaba incluido en una valuación)`
+          : `Eliminó un reporte diario del ${reporte.fecha}`,
       });
 
       return ctx.send({ data: { id: parseInt(reporteId) } });
     } catch (error) {
       console.error('[ERROR] deleteReporte:', error);
       ctx.throw(500, 'Error deleting reporte');
+    }
+  },
+
+  // Elimina de una sola vez todos los reportes de un mismo envío (mismo loteId) —
+  // es decir, "el reporte" tal como lo vive el usuario, aunque internamente sea
+  // un registro por partida. Revierte el avance/presupuesto de cada uno.
+  async deleteLote(ctx) {
+    const { obraId, loteId } = ctx.params;
+
+    if (!obraId || !loteId) return ctx.badRequest('obraId and loteId are required');
+
+    const usuarioActor = await requierePermisoObra(ctx, obraId, 'reportes', 'create');
+    if (!usuarioActor) return;
+
+    try {
+      const reportes = await strapi.entityService.findMany('api::reporte.reporte', {
+        filters: { obra: parseInt(obraId), loteId },
+        populate: ['obra', 'partida'],
+      });
+
+      if (reportes.length === 0) {
+        return ctx.notFound('No se encontraron reportes para ese lote en esta obra');
+      }
+
+      const obraNombre = reportes[0].obra?.nombre;
+      const fecha = reportes[0].fecha;
+
+      for (const reporte of reportes) {
+        await revertirEfectosReporte(parseInt(obraId), reporte);
+        await strapi.entityService.delete('api::reporte.reporte', reporte.id);
+      }
+
+      console.log(`[REPORTE] Deleted lote ${loteId}: ${reportes.length} reportes`);
+
+      await registrarHistorial({
+        obra: { id: parseInt(obraId), nombre: obraNombre },
+        usuario: usuarioActor,
+        modulo: 'reportes',
+        accion: 'ELIMINAR',
+        descripcion: `Eliminó un reporte diario del ${fecha} (${reportes.length} partida(s))`,
+      });
+
+      return ctx.send({
+        data: {
+          loteId,
+          eliminados: reportes.map((r) => ({ id: r.id, materiales: r.materiales || [] })),
+        },
+      });
+    } catch (error) {
+      console.error('[ERROR] deleteLote:', error);
+      ctx.throw(500, 'Error deleting lote');
     }
   },
 };

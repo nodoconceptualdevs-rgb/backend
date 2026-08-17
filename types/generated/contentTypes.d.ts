@@ -1415,6 +1415,7 @@ export interface ApiReporteReporte extends Struct.CollectionTypeSchema {
       'api::reporte.reporte'
     > &
       Schema.Attribute.Private;
+    loteId: Schema.Attribute.String;
     materiales: Schema.Attribute.JSON;
     montoAplicado: Schema.Attribute.Decimal &
       Schema.Attribute.SetMinMax<

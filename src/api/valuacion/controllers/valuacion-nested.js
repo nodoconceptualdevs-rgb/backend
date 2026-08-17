@@ -2,6 +2,7 @@
 
 const { requierePermisoObra } = require('../../../utils/permisos-obra');
 const { registrarHistorial } = require('../../../utils/historial');
+const { revertirEfectosReporte } = require('../../../utils/reporte-efectos');
 
 module.exports = {
   async getValuaciones(ctx) {
@@ -89,6 +90,64 @@ module.exports = {
     } catch (error) {
       console.error('[ERROR] createValuacion:', error);
       ctx.throw(500, 'Error creando valuación');
+    }
+  },
+
+  // Elimina una valuación completa (el "cierre") junto con todos los reportes
+  // que agrupaba, revirtiendo en cada uno el avance de partida y el consumo de
+  // presupuesto que habían aplicado — es decir, como si esos reportes nunca se
+  // hubieran registrado. Devuelve los materiales de cada reporte eliminado para
+  // que el frontend reponga el stock de inventario que habían consumido.
+  async deleteValuacion(ctx) {
+    const { obraId, valuacionId } = ctx.params;
+
+    if (!obraId || !valuacionId) return ctx.badRequest('obraId and valuacionId are required');
+
+    const usuarioActor = await requierePermisoObra(ctx, obraId, 'valuaciones', 'create');
+    if (!usuarioActor) return;
+
+    try {
+      const obra = await strapi.entityService.findOne('api::obra.obra', parseInt(obraId));
+      if (!obra) return ctx.notFound('Obra no encontrada');
+
+      const valuacion = await strapi.entityService.findOne('api::valuacion.valuacion', parseInt(valuacionId), {
+        populate: ['obra'],
+      });
+      if (!valuacion || valuacion.obra?.id !== parseInt(obraId)) {
+        return ctx.notFound('Valuación no encontrada o no pertenece a esta obra');
+      }
+
+      const reportes = await strapi.entityService.findMany('api::reporte.reporte', {
+        filters: { obra: parseInt(obraId), valuacionId: parseInt(valuacionId) },
+        populate: ['partida'],
+      });
+
+      for (const reporte of reportes) {
+        await revertirEfectosReporte(parseInt(obraId), reporte);
+        await strapi.entityService.delete('api::reporte.reporte', reporte.id);
+      }
+
+      await strapi.entityService.delete('api::valuacion.valuacion', parseInt(valuacionId));
+
+      console.log(`[VALUACION] Deleted: V${valuacion.numero} for obra ${obraId}, ${reportes.length} reportes eliminados en cascada`);
+
+      await registrarHistorial({
+        obra,
+        usuario: usuarioActor,
+        modulo: 'valuaciones',
+        accion: 'ELIMINAR',
+        descripcion: `Eliminó la valuación V${valuacion.numero} y sus ${reportes.length} reporte(s)`,
+      });
+
+      return ctx.send({
+        data: {
+          id: parseInt(valuacionId),
+          reportesEliminados: reportes.map((r) => ({ id: r.id, materiales: r.materiales || [] })),
+        },
+      });
+    } catch (error) {
+      console.error('[ERROR] deleteValuacion:', error);
+      ctx.throw(500, 'Error deleting valuación');
     }
   },
 };

@@ -14,5 +14,11 @@ module.exports = {
       handler: 'valuacion-nested.createValuacion',
       config: { auth: false },
     },
+    {
+      method: 'DELETE',
+      path: '/obras/:obraId/valuaciones/:valuacionId',
+      handler: 'valuacion-nested.deleteValuacion',
+      config: { auth: false },
+    },
   ],
 };
