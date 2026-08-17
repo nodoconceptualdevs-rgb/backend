@@ -58,6 +58,12 @@
     "valuacionId": {
       "type": "integer"
     },
+    "loteId": {
+      "type": "string"
+    },
+    "loteId": {
+      "type": "string"
+    },
     "obra": {
       "type": "relation",
       "relation": "manyToOne",

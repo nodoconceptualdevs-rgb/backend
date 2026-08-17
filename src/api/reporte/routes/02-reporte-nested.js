@@ -24,5 +24,11 @@ module.exports = {
       handler: 'reporte-nested.deleteReporte',
       config: { auth: false },
     },
+    {
+      method: 'DELETE',
+      path: '/obras/:obraId/reportes-lote/:loteId',
+      handler: 'reporte-nested.deleteLote',
+      config: { auth: false },
+    },
   ],
 };
